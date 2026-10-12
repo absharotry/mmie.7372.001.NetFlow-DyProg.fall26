@@ -1,0 +1,10 @@
+# Minimum versions. After installing, record the exact versions used:
+#   pip freeze > requirements-lock.txt
+numpy>=1.26
+scipy>=1.11
+networkx>=3.2      # correctness oracle in tests only
+pandas>=2.1
+matplotlib>=3.8
+psutil>=5.9        # total RAM for the feasibility pre-check
+pytest>=8.0
+ipykernel>=6.29    # notebooks/ (exploration only)
