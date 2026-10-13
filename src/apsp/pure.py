@@ -59,3 +59,39 @@ def apsp_dijkstra(n, edges):
     """
     adj = adjacency_list(n, edges)  # built once, reused by all n runs
     return [dijkstra(adj, s) for s in range(n)]
+
+
+def apsp_floyd_warshall(n, edges):
+    """All-pairs shortest paths by Floyd-Warshall: Theta(n^3) time, Theta(n^2) memory.
+
+    Negative edge weights are allowed; a negative cycle raises ValueError.
+    Returns an n x n list of lists; row i holds the distances from node i.
+    """
+    # Start: only direct edges are known. dist[i][j] = weight of edge i -> j, inf if none.
+    dist = [[math.inf] * n for _ in range(n)]
+    for i in range(n):
+        dist[i][i] = 0  # staying put costs nothing
+    for u, v, w in edges:
+        # Multi-edges: a shortest path can only ever use the cheapest parallel edge.
+        dist[u][v] = min(dist[u][v], w)
+
+    # Invariant: after sweep k, dist[i][j] is the shortest i -> j path whose intermediate stops
+    # are all among nodes 0..k. The k loop MUST be the outermost loop for this to hold.
+    for k in range(n):  # the k-th intermediate-vertex sweep: now node k may be used as a stop
+        dist_k = dist[k]
+        for i in range(n):
+            d_ik = dist[i][k]
+            if d_ik == math.inf:
+                continue  # i can't reach k, so no route i -> k -> j exists for any j
+            dist_i = dist[i]
+            for j in range(n):
+                # Same relaxation idea as Dijkstra: is "i -> k -> j" shorter than the best i -> j?
+                if d_ik + dist_k[j] < dist_i[j]:
+                    dist_i[j] = d_ik + dist_k[j]
+
+    # Negative-cycle check: if some node can get back to itself for less than 0, then going round
+    # that loop again and again makes paths arbitrarily short, so "shortest" has no meaning.
+    for i in range(n):
+        if dist[i][i] < 0:
+            raise ValueError(f"graph contains a negative cycle through node {i}")
+    return dist

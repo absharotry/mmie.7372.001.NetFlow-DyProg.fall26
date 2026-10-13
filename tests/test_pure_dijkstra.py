@@ -1,38 +1,12 @@
 """Correctness tests for the pure-Python Dijkstra (tier 1), with networkx as the oracle."""
 
 import math
-import random
 
-import networkx as nx
 import numpy as np
 import pytest
+from graph_helpers import networkx_apsp, random_graph
 
 from apsp.pure import adjacency_list, apsp_dijkstra, dijkstra
-
-
-def networkx_apsp(n, edges):
-    """Reference all-pairs distances from networkx as an n x n array (inf = unreachable).
-
-    MultiDiGraph keeps parallel edges; networkx's Dijkstra then uses the smallest one.
-    """
-    g = nx.MultiDiGraph()
-    g.add_nodes_from(range(n))
-    g.add_weighted_edges_from(edges)
-    dist = np.full((n, n), math.inf)
-    for src, lengths in nx.all_pairs_dijkstra_path_length(g):
-        for dst, d in lengths.items():
-            dist[src, dst] = d
-    return dist
-
-
-def random_graph(seed):
-    """Small random directed graph that deliberately includes the awkward cases:
-    zero weights, self-loops, multi-edges, and (usually) unreachable pairs."""
-    rng = random.Random(seed)
-    n = rng.randint(1, 30)
-    m = rng.randint(0, 3 * n)
-    edges = [(rng.randrange(n), rng.randrange(n), rng.randint(0, 20)) for _ in range(m)]
-    return n, edges
 
 
 def test_hand_checked_toy_graph(toy_graph):
