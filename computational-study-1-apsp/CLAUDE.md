@@ -33,7 +33,8 @@ This is a learning project. Work in small steps.
       Record source URL + SHA-256 checksum of every downloaded archive.
 - [x] 3. Benchmark harness: wall time, peak memory, timeout, feasibility pre-check (estimate n² memory, n³ ops before running)
 - [~] 4. Run datasets smallest → largest; report infeasible runs with complexity-based explanation
-      (done: 3 small datasets in all tiers, 2 large in scipy; pending: pure Dijkstra on the 2 large)
+      (done: 3 small datasets in all tiers; 2 large in scipy + pure Dijkstra (Slashdot full,
+      Wiki sampled); optional: full pure Dijkstra on Wiki)
 - [x] 5. Synthetic density sweep (fixed n, vary density) to locate the crossover
       (scipy crossover 21% at n=1,000, 27% at n=2,000; pure Python 98% at n=400)
 - [x] 6. Analysis + write-up (docs/comparison_report.md + .docx, submitted state 2026-10-13)
@@ -65,7 +66,8 @@ Only compare timings within the same tier.
 
 ## Benchmark methodology
 
-- Timing: 1 warm-up run (discarded), then R repeats (default R = 5, fewer for long runs); report median
+- Timing: if the first run takes < 10 s it is a warm-up (discarded) followed by 5 timed repeats;
+  otherwise that single run is the measurement. Report median
   and min. Use `time.perf_counter()`.
 - Pin threads for fairness: `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1` set before numpy
   is imported (i.e. in the subprocess environment).

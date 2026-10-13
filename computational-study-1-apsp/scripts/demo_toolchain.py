@@ -115,7 +115,7 @@ def peak_rss_mib():
     """Peak resident memory of THIS process so far, in MiB.
 
     ru_maxrss is in bytes on macOS but KiB on Linux. This is the whole process's peak (imports
-    included), so it is not a per-algorithm number; the Phase 3 harness gets those by running each
+    included), so it is not a per-algorithm number; the benchmark harness gets those by running each
     algorithm in a fresh subprocess.
     """
     raw = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
@@ -124,7 +124,7 @@ def peak_rss_mib():
 
 
 def feasibility(n, m):
-    """Back-of-envelope cost estimates, the same reasoning the Phase 3 pre-check will use."""
+    """Back-of-envelope cost estimates, the same reasoning as the benchmark's feasibility pre-check."""
     return {
         "n": n,
         "m": m,

@@ -4,7 +4,7 @@
     python scripts/run_benchmarks.py usairport health   # only these datasets
 
 Plan (2026-10-12, chosen by the user): the three small datasets in every implementation; the two
-large ones in scipy only. Pure-Python runs on the large datasets are decided later.
+large ones in scipy only. Our pure-Python Dijkstra on the large datasets: scripts/run_pure_large.py.
 Floyd-Warshall on the large datasets is still listed: the feasibility check records it as
 "infeasible" with the memory it would need, instead of running it.
 """

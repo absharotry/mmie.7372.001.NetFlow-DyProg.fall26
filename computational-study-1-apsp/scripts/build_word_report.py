@@ -20,7 +20,8 @@ def main():
     src, out = DOCS / "comparison_report.md", DOCS / "comparison_report.docx"
     subprocess.run(["pandoc", str(src), "-o", str(out), "--resource-path", str(DOCS),
                     "--from", "gfm", "--toc", "--toc-depth=2",
-                    "--metadata", "title=Computational Study 1: All-Pairs Shortest Paths"],
+                    # The report's single top heading becomes the document title; ## become level 1.
+                    "--shift-heading-level-by=-1"],
                    check=True)
     print(f"Wrote {out.relative_to(DOCS.parent)}")
 

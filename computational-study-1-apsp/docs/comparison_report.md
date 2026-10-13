@@ -2,6 +2,8 @@
 
 MMIE 7372, Network Flows: Computational Study 1.
 
+**Code, data sources and all results:** <https://github.com/absharotry/mmie.7372.001.NetFlow-DyProg.fall26/tree/main/computational-study-1-apsp>
+
 ## 1. Summary
 
 We computed all-pairs shortest paths (APSP) on five real networks in two ways: by running
@@ -22,8 +24,8 @@ of density.
 - **The gap widens with network size.** FW's work grows as n^3 whatever the number of edges, while
   Dijkstra's grows with n x m, and all five networks are sparse (density 0.008% to 1.1%).
 - **Density decides the winner.** On random networks with a fixed number of nodes, compiled FW
-  only becomes faster than n x Dijkstra above about **21-27% density**. That is 20 times denser
-  than the densest real network studied. In pure Python the crossover is at about **98%**.
+  only becomes faster than n x Dijkstra above about **21-27% density**. That is about 18-24 times
+  denser than the densest real network studied (1.1%). In pure Python the crossover is at about **98%**.
 - **Implementation changes the size of the gap, not the winner on the real data:** FW was 3.4x
   slower in scipy and 35x slower in pure Python on the same network.
 
@@ -78,6 +80,16 @@ from them. Degree and weight distributions per dataset: `results/distributions_<
 
 ## 3. Implementations and method
 
+### 3.0 The two approaches and their complexity
+
+| | n x Dijkstra | Floyd-Warshall |
+|---|---|---|
+| Idea | single-source shortest paths from each node in turn; settle the closest unsettled node, relax its edges | dynamic programming over intermediate nodes: in sweep k, allow node k as a stop for every pair (i, j) |
+| Time, binary heap | O(n m log n) | Theta(n^3), independent of m |
+| Time, Fibonacci heap | O(n m + n^2 log n) | (same) |
+| Memory | O(n + m) per source, if each row of results is processed and discarded | Theta(n^2): the whole distance table at all times |
+| Edge weights | must be >= 0 | may be negative; negative cycles detected (negative diagonal) |
+
 ### 3.1 Implementations
 
 | Version | n x Dijkstra | Floyd-Warshall |
@@ -97,8 +109,8 @@ graphs with zero weights, self-loops, multi-edges, negative edges and negative c
   genuine Dijkstra. (No dataset as used has negative weights.)
 - On the hop-count networks (Slashdot, Wiki Conflict), breadth-first search would be the optimal
   single-source method. We time Dijkstra anyway, to compare like with like.
-- The pure tier is not purely interpreted: Python's `heapq` is written in C, which favors Dijkstra
-  within that tier.
+- Our pure-Python version is not entirely interpreted: Python's `heapq` is written in C, which
+  favors Dijkstra among the pure-Python measurements.
 - Our pure FW skips the inner loop when node i cannot reach node k (same result; still Theta(n^3) in
   the worst case). **scipy's FW evidently does the same**: on random networks with n = 1,000 it took
   0.005 s at 0.1% density but about 0.46 s at 2% density or more, while a strict triple loop would
@@ -136,6 +148,10 @@ graphs with zero weights, self-loops, multi-edges, negative edges and negative c
 | Wiki Conflict | 116,836 | 4,055,742 | **30.5 min** | infeasible | infeasible | **~7.7 h** (estimated from 1,000 sources) | infeasible |
 
 ![Time vs network size](../results/fig_time_vs_n.png)
+
+"Infeasible" for numpy FW and pure FW on the two large networks follows from the same memory
+check as scipy FW (they need 2 and up to 4 times as much memory: 73 GiB and more for Slashdot);
+they were not submitted to the benchmark runner.
 
 *Figure 1. Algorithm time against n (both axes logarithmic). Blue: n x Dijkstra; orange:
 Floyd-Warshall. Hollow markers: predicted or estimated, not measured.*
@@ -188,7 +204,7 @@ numpy FW (twice the memory) and pure FW (up to four times) are infeasible for th
 cell, so the whole table must stay in memory for the entire run: Theta(n^2) space, independent of
 how many edges the network has. For n = 116,836 that is 13.65 billion cells, or 101.7 GiB at 8 bytes
 each. Keeping the table on disk does not help: n sweeps over 36.5 GiB (Slashdot) would mean roughly
-70,000 full passes, about 2.5 petabytes of disk traffic.
+70,000 full passes, about 2.7 petabytes of disk traffic.
 
 **Why: time.** FW performs n^3 relaxation checks in the worst case: 3.4 x 10^14 for Slashdot and
 1.6 x 10^15 for Wiki Conflict. Both prediction models are calibrated on Advogato's measured scipy
@@ -229,7 +245,7 @@ Selected times (scipy, n = 2,000):
 
 What the experiment shows:
 - **Dijkstra's time grows with density; FW's does not.** Once the network is connected (from about
-  1% density), FW's time is flat at its n^3 cost, while Dijkstra's keeps growing with m.
+  1-2% density), FW's time is flat at its n^3 cost, while Dijkstra's keeps growing with m.
 - **FW does win on dense networks**, but only well above 20% density in compiled code. The
   crossover is later than the step-count theory predicts (9-10%) because an FW step is several times
   cheaper than a Dijkstra edge relaxation, and scipy's Fibonacci-heap Dijkstra does not pay log n per
@@ -300,9 +316,9 @@ solves them in O(n(n + m)) time without a priority queue.
 
 ## 8. Reproducing the results
 
-From the repository root:
-
 ```
+git clone https://github.com/absharotry/mmie.7372.001.NetFlow-DyProg.fall26.git
+cd mmie.7372.001.NetFlow-DyProg.fall26
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r computational-study-1-apsp/requirements.txt
 pip install -e computational-study-1-apsp
@@ -371,7 +387,7 @@ Applies to US Airports (D1), Adolescent Health (D5) and Advogato (D6).
 | Timing covers the shortest-path computation only. | Loading data and building the input (which take seconds to a minute on the large networks) are excluded. | Applied identically to every version. scipy's FW includes a sparse-to-dense conversion inside its call; it is O(n^2) and negligible next to n^3. |
 | Our pure Dijkstra on Wiki Conflict is estimated from 1,000 random sources (time x n / 1,000). | The sampled sources might not be typical. | The sample's reachable share (93.1%) and mean distance (3.330) are close to the full scipy run's (93.8%, 3.322), so the sample is representative to within a few percent. |
 | FW times for the infeasible runs are extrapolated from Advogato. | Prediction error. | Two models give a range (21.5 h vs 12.8 h; 4 vs 6 days). The n^3 model predicted the other measured FW runs to within 0.96x-1.41x. The conclusion (hours to days) does not depend on which model is used. |
-| A run is infeasible if its memory estimate exceeds 60% of RAM (8 bytes per table cell in scipy, 16 in numpy, up to 32 in pure Python). | The memory model could be wrong. | On Advogato, scipy FW's measured memory increase (346 MiB) was about 1.7 times the table size (203 MiB), so the model *underestimates* memory: the real requirement for the large networks is even higher than stated. |
+| A run is infeasible if its memory estimate exceeds 60% of RAM (8 bytes per table cell in scipy, 16 in numpy, up to 32 in pure Python). | The memory model could be wrong. | On Advogato, scipy FW's measured memory increase (346 MiB) was 1.7 times the table (203 MiB), but most of the excess comes from our own summary step, which copies the reachable distances (Section 4.4), not from the algorithm. Either way the large networks exceed the budget by far more than any model error: 2.5 times (Slashdot) and 7 times (Wiki Conflict). |
 | scipy's FW skips pairs (i, k) where i cannot reach k. | We inferred this from measurements, not from scipy's source code. | The evidence is strong: on random networks with n = 1,000 its time ranged from 0.005 s to about 0.46 s depending on density, which is impossible for a fixed n^3 loop. |
 | One machine, single thread. Long runs (over 10 s) were measured once. | Absolute times would differ on other hardware; single long runs carry some timing noise. | Ratios and complexity arguments do not depend on the machine. For short runs measured five times, the spread (slowest minus fastest, relative to the median) was 4% at the median and 12% at most, far smaller than the differences between algorithms (3x to 170x). |
 
@@ -383,3 +399,19 @@ Applies to US Airports (D1), Adolescent Health (D5) and Advogato (D6).
 - On the small networks, peak memory reflects our batch size more than the algorithm (Section 4.4).
 - Results are from one machine (Apple M2, single thread); absolute times will differ elsewhere, but
   the ratios and the complexity arguments do not depend on the machine.
+
+## 11. References
+
+- E. W. Dijkstra (1959). A note on two problems in connexion with graphs. *Numerische Mathematik* 1, 269-271.
+- R. W. Floyd (1962). Algorithm 97: Shortest path. *Communications of the ACM* 5(6), 345.
+- S. Warshall (1962). A theorem on Boolean matrices. *Journal of the ACM* 9(1), 11-12.
+- M. L. Fredman, R. E. Tarjan (1987). Fibonacci heaps and their uses in improved network optimization algorithms. *Journal of the ACM* 34(3), 596-615.
+- T. Opsahl, F. Agneessens, J. Skvoretz (2010). Node centrality in weighted networks: Generalizing degree and shortest paths. *Social Networks* 32(3), 245-251.
+- J. Kunegis (2013). KONECT: The Koblenz Network Collection. *Proc. WWW 2013 Companion*, 1343-1350.
+- T. P. Peixoto. The Netzschleuder network catalogue and repository. https://networks.skewed.de
+- T. Opsahl (2011). Why Anchorage is not (that) important: Binary ties and sample selection. Blog post, http://wp.me/poFcY-Vw (US Airports data).
+- J. Moody (2001). Peer influence groups: identifying dense clusters in large networks. *Social Networks* 23(4), 261-283 (Adolescent Health data).
+- P. Massa, M. Salvetti, D. Tomasoni (2009). Bowling alone and trust decline in social network sites. *Proc. IEEE DASC 2009* (Advogato data).
+- J. Kunegis, A. Lommatzsch, C. Bauckhage (2009). The Slashdot Zoo: Mining a social network with negative edges. *Proc. WWW 2009*, 741-750.
+- U. Brandes, P. Kenis, J. Lerner, D. van Raaij (2009). Network analysis of collaboration structure in Wikipedia. *Proc. WWW 2009*, 731-740 (Wiki Conflict data).
+- P. Virtanen et al. (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python. *Nature Methods* 17, 261-272.

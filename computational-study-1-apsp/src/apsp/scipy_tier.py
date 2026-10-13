@@ -48,7 +48,7 @@ def apsp_dijkstra_scipy(graph):
     """n x Dijkstra via scipy (C implementation, Fibonacci-heap priority queue). Returns n x n array.
 
     With no `indices` argument scipy runs Dijkstra from every node and returns the full n x n table.
-    (For large n the benchmark will instead pass batches of sources; that comes in Phase 3.)
+    (The benchmark instead streams batches of sources; see apsp.bench_worker.run_scipy_dijkstra.)
     """
     check_nonnegative(graph)
     return dijkstra(graph, directed=True)
