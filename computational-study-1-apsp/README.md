@@ -3,9 +3,16 @@
 **n x Dijkstra vs Floyd-Warshall on five real-world networks** (MMIE 7372, Network Flows, Fall 2026).
 
 - Assignment: [docs/assignment.md](docs/assignment.md)
-- Report: [docs/comparison_report.md](docs/comparison_report.md) (Word version: `docs/comparison_report.docx`)
+- Report: [docs/comparison_report.md](docs/comparison_report.md), Word version: [docs/comparison_report.docx](docs/comparison_report.docx)
 - Modeling decisions (how each dataset's weights became distances): [docs/decisions.md](docs/decisions.md)
 - Data sources and checksums: [data/SOURCES.md](data/SOURCES.md)
+
+## Key findings
+
+- n x Dijkstra beat Floyd-Warshall on all five networks, in every implementation.
+- Floyd-Warshall cannot run on Slashdot Zoo and Wiki Conflict: its n x n table needs 36.5 / 101.7 GiB.
+- On random networks with fixed n, compiled Floyd-Warshall only wins above ~21-27% density;
+  the real networks are at 0.008-1.1%.
 
 ## What is implemented
 
@@ -50,6 +57,9 @@ Raw files are not committed. Download them into `data/raw/<folder>/` as listed i
 python scripts/preprocess_datasets.py   # raw data -> distance graphs (data/processed/)
 python scripts/describe_dataset.py      # network characteristics + distribution figures
 python scripts/run_benchmarks.py        # benchmark on the five datasets (about 1.5 h)
+python scripts/run_pure_large.py --stages slashdot,sample   # our Dijkstra on the two large networks
+python scripts/run_density_sweep.py     # density experiment on random networks (about 10 min)
 python scripts/make_report.py           # report tables and figures
+python scripts/build_word_report.py     # docs/comparison_report.docx (needs pandoc)
 pytest -q                               # correctness tests
 ```

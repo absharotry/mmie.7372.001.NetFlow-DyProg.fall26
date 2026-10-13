@@ -36,13 +36,15 @@ This is a learning project. Work in small steps.
       (done: 3 small datasets in all tiers, 2 large in scipy; pending: pure Dijkstra on the 2 large)
 - [x] 5. Synthetic density sweep (fixed n, vary density) to locate the crossover
       (scipy crossover 21% at n=1,000, 27% at n=2,000; pure Python 98% at n=400)
-- [ ] 6. Analysis + write-up
+- [x] 6. Analysis + write-up (docs/comparison_report.md + .docx, submitted state 2026-10-13)
 
 ## Status (2026-10-13)
 
 Draft report: docs/comparison_report.md (Section 8 lists pending items). Results: results/benchmarks.csv,
 results/report_tables.md, figures from scripts/make_report.py. Still to decide with the user:
-- [ ] Pure Dijkstra on Slashdot (~10-20 min) and Wiki Conflict (~7 h): full run, or sample + extrapolate.
+- [x] Pure Dijkstra: Slashdot full (24.8 min); Wiki Conflict sample of 1,000 sources (est. 7.7 h).
+- [ ] Optional: full pure Dijkstra on Wiki Conflict (`run_pure_large.py --stages full`); if it
+      finishes, regenerate tables, update report sections 1/4.1/7/9 and the .docx.
 - Submission: GitHub course repo + Word report + all code (decided 2026-10-13).
 - Known measurement caveat: on small datasets, peak memory mostly reflects the 256 MiB chunk size in
   bench_worker (whole table fits in one chunk), not the algorithm.

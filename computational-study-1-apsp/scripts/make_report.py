@@ -35,10 +35,18 @@ FIT_FROM = "advogato"  # largest dataset where every version ran: used to calibr
 
 
 def load():
+    """Latest FULL run per (dataset, tier, algo), plus the latest SAMPLED run (Dijkstra on a random
+    subset of sources) separately. Rows from before sampling existed have no "sources": full runs."""
     df = pd.read_csv(RESULTS / "benchmarks.csv")
-    df = df.sort_values("timestamp").groupby(["dataset", "tier", "algo"], as_index=False).last()
-    df["order"] = df["dataset"].map(list(DATASETS).index)
-    return df.sort_values("order")
+    if "sources" not in df:
+        df["sources"] = np.nan
+    sampled = df.sources.notna() & (df.sources < df.n)
+    keys = ["dataset", "tier", "algo"]
+    full = df[~sampled].sort_values("timestamp").groupby(keys, as_index=False).last()
+    samples = df[sampled & (df.status == "ok")].sort_values("timestamp").groupby(keys, as_index=False).last()
+    for frame in (full, samples):
+        frame["order"] = frame["dataset"].map(list(DATASETS).index)
+    return full.sort_values("order"), samples.sort_values("order")
 
 
 def steps(algo, n, m):
@@ -75,7 +83,19 @@ def predictions(df):
     return pd.DataFrame(rows)
 
 
-def tables(df, pred):
+def reachable_model(df, r):
+    """FW time ~ c x n x (reachable ordered pairs), calibrated on FIT_FROM in the same tier."""
+    if r.algo != "floyd_warshall":
+        return "-"
+    cal = df[(df.dataset == FIT_FROM) & (df.tier == r.tier) & (df.algo == r.algo) & (df.status == "ok")]
+    dj = df[(df.dataset == r.dataset) & (df.algo == "dijkstra") & (df.status == "ok")]
+    if cal.empty or dj.empty:
+        return "-"
+    c = cal.algo_median_s.iloc[0] / (cal.n.iloc[0] * cal.reachable_pairs.iloc[0])
+    return fmt_s(c * r.n * dj.reachable_pairs.iloc[0])
+
+
+def tables(df, pred, samples):
     out = []
     first = df.iloc[0]
     out.append("## Machine\n")
@@ -92,7 +112,11 @@ def tables(df, pred):
         cells = []
         for tier, algo in VERSIONS:
             r = d[(d.tier == tier) & (d.algo == algo)]
-            if r.empty:
+            smp = samples[(samples.dataset == slug) & (samples.tier == tier) & (samples.algo == algo)]
+            if (r.empty or r.status.iloc[0] != "ok") and len(smp):
+                k = int(smp.sources.iloc[0])
+                cells.append(f"~{fmt_s(smp.algo_full_estimate_s.iloc[0])} (est. from {k:,} sources)")
+            elif r.empty:
                 cells.append("not run")
             elif r.status.iloc[0] == "ok":
                 reps = int(r.repeats.iloc[0])
@@ -127,13 +151,17 @@ def tables(df, pred):
                    f"{8 * r.n**2 / 2**20:,.0f} |")
 
     out.append("\n## Table 4. Runs not performed\n")
-    out += ["| Dataset | Version | Status | Reason | Predicted time if memory allowed |",
-            "|---|---|---|---|---|"]
+    out.append("Predicted FW time, two models calibrated on " + DATASETS[FIT_FROM] + ": (1) n^3 steps; "
+               "(2) n x reachable pairs, because scipy's FW skips node pairs (i, k) where i cannot "
+               "reach k. Reachable pairs come from the Dijkstra run on the same dataset.\n")
+    out += ["| Dataset | Version | Status | Reason | Predicted: n^3 model | Predicted: n x reachable model |",
+            "|---|---|---|---|---|---|"]
     for _, r in df[df.status != "ok"].iterrows():
         p = pred[(pred.dataset == r.dataset) & (pred.tier == r.tier) & (pred.algo == r.algo)]
         guess = fmt_s(p.predicted_s.iloc[0]) if len(p) else "-"
+        reach = reachable_model(df, r)
         out.append(f"| {DATASETS[r.dataset]} | {LABEL[(r.tier, r.algo)]} | {r.status} | "
-                   f"{r.reason} | {guess} |")
+                   f"{r.reason} | {guess} | {reach} |")
 
     out.append(f"\n## Table 5. Step-count model: calibrated on {DATASETS[FIT_FROM]}, "
                "checked on the others\n")
@@ -170,7 +198,7 @@ def style_axes(ax):
     ax.tick_params(colors=MUTED)
 
 
-def fig_time_vs_n(df, pred):
+def fig_time_vs_n(df, pred, samples):
     fig, ax = plt.subplots(figsize=(9, 5.5))
     for tier, algo in VERSIONS:
         d = df[(df.tier == tier) & (df.algo == algo) & (df.status == "ok")].sort_values("n")
@@ -179,17 +207,29 @@ def fig_time_vs_n(df, pred):
         ls, mk = STYLE[tier]
         ax.plot(d.n, d.algo_median_s, linestyle=ls, marker=mk, color=COLOR[algo], linewidth=2,
                 markersize=8, markeredgecolor="white", markeredgewidth=1.5)
+        below = (tier, algo) == ("pure", "dijkstra")  # avoid colliding with the scipy Dijkstra label
         ax.annotate(LABEL[(tier, algo)], (d.n.iloc[-1], d.algo_median_s.iloc[-1]),
-                    xytext=(8, 0), textcoords="offset points", va="center", color=INK, fontsize=9)
+                    xytext=(0, -14) if below else (8, 0), textcoords="offset points",
+                    ha="center" if below else "left", va="center", color=INK, fontsize=9)
     # Predicted (not measured) FW times for datasets where it could not run: hollow markers.
     p = pred[(pred.algo == "floyd_warshall") & (pred.tier == "scipy") & (pred.status != "ok")]
     if len(p):
         ax.plot(p.n, p.predicted_s, linestyle="none", marker="o", markersize=9,
                 markerfacecolor="none", markeredgecolor=ORANGE, markeredgewidth=2)
         for _, r in p.iterrows():
-            ax.annotate(f"scipy FW, predicted\n({fmt_s(r.predicted_s)}, does not fit in RAM)",
+            full = df[(df.dataset == r.dataset) & (df.tier == "scipy") & (df.algo == "floyd_warshall")].iloc[0]
+            ax.annotate(f"scipy FW, predicted {fmt_s(r.predicted_s)} (n^3 model)\n"
+                        f"or {reachable_model(df, full)} (reachable-pairs model); does not fit in RAM",
                         (r.n, r.predicted_s), xytext=(-10, 0), textcoords="offset points",
                         ha="right", va="center", color=MUTED, fontsize=8)
+    for _, r in samples.iterrows():  # estimated from a sample of sources: hollow marker
+        ls, mk = STYLE[r.tier]
+        ax.plot([r.n], [r.algo_full_estimate_s], linestyle="none", marker=mk, markersize=10,
+                markerfacecolor="none", markeredgecolor=COLOR[r.algo], markeredgewidth=2)
+        ax.annotate(f"{LABEL[(r.tier, r.algo)]}, estimated\n(from {int(r.sources):,} sources: "
+                    f"{fmt_s(r.algo_full_estimate_s)})", (r.n, r.algo_full_estimate_s),
+                    xytext=(-10, 0), textcoords="offset points", ha="right", va="center",
+                    color=MUTED, fontsize=8)
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel("number of nodes n (log scale)", color=INK)
@@ -244,10 +284,10 @@ def fig_ratio_vs_n(df):
 
 
 def main():
-    df = load()
+    df, samples = load()
     pred = predictions(df)
-    (RESULTS / "report_tables.md").write_text(tables(df, pred))
-    fig_time_vs_n(df, pred)
+    (RESULTS / "report_tables.md").write_text(tables(df, pred, samples))
+    fig_time_vs_n(df, pred, samples)
     fig_ratio_vs_n(df)
     print("Wrote results/report_tables.md, results/fig_time_vs_n.png, results/fig_ratio_vs_n.png")
 

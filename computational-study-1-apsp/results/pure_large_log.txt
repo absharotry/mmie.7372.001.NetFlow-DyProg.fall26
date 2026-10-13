@@ -1,0 +1,2 @@
+slashdot pure dijkstra (all sources): ok, 1,486.8 s for 69,995 sources
+wikiconflict pure dijkstra (1000 sources): ok, 235.8 s for 1,000 sources, full-run estimate 7.65 h
