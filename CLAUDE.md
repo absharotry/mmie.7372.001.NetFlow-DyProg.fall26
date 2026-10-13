@@ -18,7 +18,7 @@ This is a learning project. Work in small steps.
 ## Phases
 
 - [x] 0. Environment: git init + .gitignore, venv, install requirements, freeze `requirements-lock.txt`, repo layout
-- [ ] 1. Implement + validate both algorithms on toy graphs (hand-checkable example + random small graphs vs networkx)
+- [x] 1. Implement + validate both algorithms on toy graphs (hand-checkable example + random small graphs vs networkx)
 - [ ] 2. Load/preprocess datasets; record characteristics (n, m, density, degree stats, components, weighted/signed, reachable-pair fraction).
       Record source URL + SHA-256 checksum of every downloaded archive.
 - [ ] 3. Benchmark harness: wall time, peak memory, timeout, feasibility pre-check (estimate n² memory, n³ ops before running)
@@ -50,6 +50,24 @@ Only compare timings within the same tier.
 - Each results CSV row records: dataset, algorithm, tier, n, m, time stats, peak RSS, status
   (ok / timeout / infeasible / error). Store hardware (CPU, RAM, OS) and library versions alongside results.
 
+## Report notes: algorithm variants (MUST appear in the final write-up)
+
+Whenever an implementation is not textbook Dijkstra / textbook Floyd-Warshall, or is a variant, the
+report must say so explicitly, with what differs and how it affects correctness or complexity.
+Add to this list as soon as a new case is found.
+
+- Our pure Dijkstra uses a binary heap with lazy deletion (stale entries skipped on pop) instead of
+  decrease-key. Still O(m log n) per source; heap holds up to m + 1 entries.
+- scipy `csgraph.dijkstra` uses a Fibonacci heap (O(m + n log n) per source), not a binary heap.
+- scipy `csgraph.dijkstra` on negative weights only warns and re-processes nodes whose distance drops.
+  That is a label-correcting method, NOT Dijkstra: no "settled is final" guarantee, and worst-case
+  running time can be exponential. Our wrappers forbid negative weights, so every Dijkstra timing in
+  the report is genuine Dijkstra.
+- Our pure FW skips the inner j loop when dist[i][k] is inf (same result, fewer operations on sparse
+  reachability). Still Theta(n^3) in the worst case.
+- Our numpy FW is the textbook algorithm vectorized: the k loop stays in Python, the i/j loops become
+  one broadcast per k. Same Theta(n^3) work; peak memory ~2 n^2 (table + one temporary per sweep).
+
 ## Open decisions (must be answered before Phase 2 preprocessing)
 
 - [ ] Signed graphs (Slashdot Zoo, Wiki Conflict): how to turn signs into distances? Options include
@@ -80,7 +98,11 @@ requirements-lock.txt  exact installed versions (what we actually ran; from `pip
   invert the meaning; transforms such as 1/w or -log w must be a deliberate, documented choice.
 - scipy COO → CSR conversion SUMS duplicate entries. Multi-edges must be deduplicated (e.g. keep min)
   before building the sparse matrix.
-- Check how csgraph treats explicit zero-weight entries before relying on them.
+- Zero weights (verified on scipy 1.17.1, pinned by tests/test_scipy_tier.py): an explicit 0 stored in
+  a sparse matrix IS an edge, but `eliminate_zeros()` and sparse arithmetic (e.g. `g + g`) silently
+  drop it, and in a DENSE matrix 0 means "no edge". Always build via `apsp.scipy_tier.edges_to_csr`.
+- `csgraph.dijkstra` only WARNS on negative weights and silently switches to re-processing nodes
+  (correct without negative cycles, but no longer O(m log n) Dijkstra). Our wrappers reject them.
 - All-pairs output is n² no matter which algorithm. For large n, Dijkstra must stream per-source results
   (aggregate or write to disk) instead of holding the full matrix.
 - Unreachable pairs are `inf`. Keep that in mind when computing averages.
