@@ -26,6 +26,16 @@ This is a learning project. Work in small steps.
 - [ ] 5. Synthetic density sweep (fixed n, vary density) to locate the crossover
 - [ ] 6. Analysis + write-up
 
+## Paused here (2026-10-12): open questions before Phase 3
+
+The user wants every dataset run in every tier (scipy Dijkstra/FW, numpy FW, pure Dijkstra/FW; there
+is no numpy Dijkstra). Infeasible combinations (FW on Slashdot and Wiki in every tier) get recorded by
+the feasibility pre-check, not attempted. Still to decide:
+- [ ] Pure Dijkstra on Wiki Conflict (~7 h): A = full overnight run, B = sample ~1,000 sources and
+      extrapolate (label as estimate), or both.
+- [ ] Time limits: proposed 30 min default, 1 h for scipy Dijkstra on Wiki, 10 h for pure Dijkstra on Wiki.
+- Needed in Phase 3 regardless: a streaming pure Dijkstra (aggregate each row, then discard it).
+
 ## Implementation tiers
 
 1. `pure`: from-scratch pure Python (heapq Dijkstra, triple-loop FW). Learning + validation only, small graphs.
@@ -63,6 +73,9 @@ Add to this list as soon as a new case is found.
   That is a label-correcting method, NOT Dijkstra: no "settled is final" guarantee, and worst-case
   running time can be exponential. Our wrappers forbid negative weights, so every Dijkstra timing in
   the report is genuine Dijkstra.
+- The "pure" tier is not uniformly interpreted: our pure Dijkstra's priority queue is `heapq`, which
+  is implemented in C. This favors Dijkstra inside the pure tier (US Airports: pure FW/Dijkstra = 32x,
+  scipy = 3.3x, step-count theory = 8.3x). Report the ratio per tier, never across tiers.
 - Our pure FW skips the inner j loop when dist[i][k] is inf (same result, fewer operations on sparse
   reachability). Still Theta(n^3) in the worst case.
 - Unit-weight graphs (Wiki Conflict under D2, Slashdot under D4): BFS would be the optimal single-source algorithm there.
