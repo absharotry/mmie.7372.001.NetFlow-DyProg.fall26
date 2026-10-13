@@ -70,9 +70,12 @@ Add to this list as soon as a new case is found.
 
 ## Open decisions (must be answered before Phase 2 preprocessing)
 
+Decided items are logged in `docs/decisions.md` (with a plain-language explanation for the report).
+
 - [ ] Signed graphs (Slashdot Zoo, Wiki Conflict): how to turn signs into distances? Options include
       ignoring weights (hop count), |w|, keeping only positive edges, or another documented choice.
-- [ ] Strength-type weights (US Airports, Advogato, Adolescent Health): raw, 1/w, -log w, or unweighted?
+- [x] US Airports: distance = 1 / passengers; nodes = the 1,574 airports with routes (D1 in docs/decisions.md).
+- [ ] Strength-type weights (Advogato, Adolescent Health): raw, 1/w, -log w, or unweighted?
 - [ ] Directed vs undirected treatment per dataset (keep native direction unless decided otherwise).
 - [ ] Multi-edges (e.g. Wiki Conflict has repeated/timestamped edges): keep min, keep one, or aggregate?
 
@@ -80,7 +83,9 @@ Add to this list as soon as a new case is found.
 
 ```
 data/raw/            downloaded archives (gitignored)
-data/processed/      cleaned edge lists (gitignored)
+data/processed/      distance graphs as .npz (gitignored; rebuild with scripts/preprocess_datasets.py)
+data/SOURCES.md      download URLs + SHA-256 of every raw file
+docs/decisions.md    modeling decision log (what, why, alternatives, consequences, plain-language)
 src/apsp/            package code (algorithms, loaders, characteristics, bench)
 tests/               pytest correctness tests
 scripts/             runnable entry points

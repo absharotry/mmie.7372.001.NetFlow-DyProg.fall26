@@ -62,7 +62,7 @@ def load_usairport(raw_dir=RAW_DIR):
         v=v,
         w=data[:, 2].astype(float),
         directed=True,
-        weight_meaning="passengers on the route in 2010 (strength, not distance)",
+        weight_meaning="passengers on the route in 2010",  # a strength, not a distance
         labels=[codes[i] for i in original_ids.tolist()],
         source="http://opsahl.co.uk/tnet/datasets/USairport_2010.txt (+ _codes.txt)",
     )
