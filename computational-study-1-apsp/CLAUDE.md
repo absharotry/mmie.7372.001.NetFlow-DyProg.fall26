@@ -34,7 +34,8 @@ This is a learning project. Work in small steps.
 - [x] 3. Benchmark harness: wall time, peak memory, timeout, feasibility pre-check (estimate n² memory, n³ ops before running)
 - [~] 4. Run datasets smallest → largest; report infeasible runs with complexity-based explanation
       (done: 3 small datasets in all tiers, 2 large in scipy; pending: pure Dijkstra on the 2 large)
-- [ ] 5. Synthetic density sweep (fixed n, vary density) to locate the crossover
+- [x] 5. Synthetic density sweep (fixed n, vary density) to locate the crossover
+      (scipy crossover 21% at n=1,000, 27% at n=2,000; pure Python 98% at n=400)
 - [ ] 6. Analysis + write-up
 
 ## Status (2026-10-13)
@@ -42,8 +43,7 @@ This is a learning project. Work in small steps.
 Draft report: docs/comparison_report.md (Section 8 lists pending items). Results: results/benchmarks.csv,
 results/report_tables.md, figures from scripts/make_report.py. Still to decide with the user:
 - [ ] Pure Dijkstra on Slashdot (~10-20 min) and Wiki Conflict (~7 h): full run, or sample + extrapolate.
-- [ ] Phase 5 density sweep (fixed n, increasing density) for discussion points (b) and (c).
-- [ ] Submission format for the discussion (Markdown, PDF or Word).
+- Submission: GitHub course repo + Word report + all code (decided 2026-10-13).
 - Known measurement caveat: on small datasets, peak memory mostly reflects the 256 MiB chunk size in
   bench_worker (whole table fits in one chunk), not the algorithm.
 
@@ -94,6 +94,10 @@ Add to this list as soon as a new case is found.
 - The "pure" tier is not uniformly interpreted: our pure Dijkstra's priority queue is `heapq`, which
   is implemented in C. This favors Dijkstra inside the pure tier (US Airports: pure FW/Dijkstra = 32x,
   scipy = 3.3x, step-count theory = 8.3x). Report the ratio per tier, never across tiers.
+- scipy `floyd_warshall` evidently also skips the inner loop when i cannot reach k (measured: on
+  random graphs with n = 1,000 it takes 0.005 s at 0.1% density vs ~0.46 s at >= 2%; a strict triple
+  loop would take the same time). So FW time is ~n x (reachable i-k pairs), bounded by n^3.
+  Our numpy FW has no such skip.
 - Our pure FW skips the inner j loop when dist[i][k] is inf (same result, fewer operations on sparse
   reachability). Still Theta(n^3) in the worst case.
 - Unit-weight graphs (Wiki Conflict under D2, Slashdot under D4): BFS would be the optimal single-source algorithm there.

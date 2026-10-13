@@ -73,3 +73,11 @@ def test_append_row_handles_new_columns(tmp_path):
     table = pd.read_csv(path)
     assert table["a"].tolist() == [1, 2]
     assert np.isnan(table["b"][0]) and table["b"][1] == 3  # old row gets an empty cell
+
+
+@pytest.mark.parametrize("tier", ["scipy", "pure"])
+def test_dijkstra_sample_mode_scales_time(toy_processed_dir, tier):
+    row = run_one("toy", tier, "dijkstra", timeout_s=120, processed_dir=toy_processed_dir, sample=2)
+    assert row["status"] == "ok" and row["sources"] == 2
+    assert row["algo_full_estimate_s"] == pytest.approx(row["algo_median_s"] * 5 / 2)
+    assert row["reachable_pairs"] <= 10  # only the sampled rows are summarized

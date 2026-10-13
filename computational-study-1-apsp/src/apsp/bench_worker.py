@@ -20,6 +20,7 @@ for _var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
     os.environ.setdefault(_var, "1")
 
 import argparse
+import functools
 import json
 import resource
 import sys
@@ -92,14 +93,15 @@ def prepare_scipy(ds):
     return graph
 
 
-def run_scipy_dijkstra(graph):
+def run_scipy_dijkstra(graph, sources=None):
     # Checked once here, so calling scipy's dijkstra directly below is genuine Dijkstra.
     scipy_tier.check_nonnegative(graph)
     n = graph.shape[0]
+    all_sources = np.arange(n) if sources is None else np.asarray(sources)
     summary, algo = Summary(), 0.0
     step = rows_per_chunk(n)
-    for start in range(0, n, step):  # streaming: a batch of sources, summarize, discard
-        sources = np.arange(start, min(start + step, n))
+    for start in range(0, len(all_sources), step):  # streaming: a batch, summarize, discard
+        sources = all_sources[start:start + step]
         t0 = time.perf_counter()
         d = scipy_dijkstra(graph, directed=True, indices=sources)
         algo += time.perf_counter() - t0
@@ -132,9 +134,9 @@ def prepare_pure_dijkstra(ds):
     return pure.adjacency_list(ds.n, edge_list(ds))
 
 
-def run_pure_dijkstra(adj):
+def run_pure_dijkstra(adj, sources=None):
     summary, algo = Summary(), 0.0
-    for s in range(len(adj)):  # streaming: one source at a time, summarize, discard
+    for s in range(len(adj)) if sources is None else sources:  # one source at a time, then discard
         t0 = time.perf_counter()
         row = pure.dijkstra(adj, s)
         algo += time.perf_counter() - t0
@@ -165,10 +167,17 @@ ALGORITHMS = {
 }
 
 
-def measure(slug, tier, algo, processed_dir):
+def measure(slug, tier, algo, processed_dir, sample=None, seed=0):
+    """sample=K (Dijkstra only): solve K random sources (fixed seed) instead of all n. The caller
+    scales the time by n / K to estimate the full run; the summary then covers the sample only."""
     ds = load_processed(slug, processed_dir)
     prepare, run = ALGORITHMS[(tier, algo)]
     state = prepare(ds) if prepare else ds
+    if sample:
+        if algo != "dijkstra":
+            raise ValueError("sampling sources only makes sense for Dijkstra")
+        chosen = np.sort(np.random.default_rng(seed).choice(ds.n, size=sample, replace=False))
+        run = functools.partial(run, sources=chosen.tolist())
     baseline = peak_rss_bytes()  # data loaded and input built, before any algorithm run
 
     def timed_run():
@@ -186,7 +195,7 @@ def measure(slug, tier, algo, processed_dir):
             total_times.append(total_s)
 
     return {
-        "status": "ok", "n": ds.n, "m": int(len(ds.u)),
+        "status": "ok", "n": ds.n, "m": int(len(ds.u)), "sources": sample or ds.n,
         "warmup": warmup, "repeats": len(algo_times),
         "algo_times_s": algo_times, "total_times_s": total_times,
         "baseline_rss_bytes": baseline, "peak_rss_bytes": peak_rss_bytes(),
@@ -200,8 +209,10 @@ def main():
     parser.add_argument("tier")
     parser.add_argument("algo")
     parser.add_argument("--processed-dir", default=str(PROCESSED_DIR))
+    parser.add_argument("--sample", type=int, default=None, help="Dijkstra: solve K random sources")
+    parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
-    result = measure(args.slug, args.tier, args.algo, args.processed_dir)
+    result = measure(args.slug, args.tier, args.algo, args.processed_dir, args.sample, args.seed)
     print(json.dumps(result, allow_nan=False))
 
 

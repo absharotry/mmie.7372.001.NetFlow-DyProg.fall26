@@ -69,8 +69,10 @@ def machine_info():
             "numpy": np.__version__, "scipy": scipy.__version__}
 
 
-def run_one(slug, tier, algo, timeout_s, processed_dir=PROCESSED_DIR, ram_bytes=None):
-    """Run (or refuse) one measurement and return one result row as a dict."""
+def run_one(slug, tier, algo, timeout_s, processed_dir=PROCESSED_DIR, ram_bytes=None, sample=None):
+    """Run (or refuse) one measurement and return one result row as a dict.
+
+    sample=K (Dijkstra only): time K random sources; "algo_full_estimate_s" scales to all n."""
     ds = load_processed(slug, processed_dir)
     n, m = ds.n, int(len(ds.u))
     ram_bytes = ram_bytes or psutil.virtual_memory().total
@@ -79,13 +81,13 @@ def run_one(slug, tier, algo, timeout_s, processed_dir=PROCESSED_DIR, ram_bytes=
            "tier": tier, "algo": algo, "status": "infeasible", "reason": reason,
            "est_memory_gib": round(need / GIB, 3), "timeout_s": timeout_s}
     if ok:
-        row |= _run_worker(slug, tier, algo, timeout_s, processed_dir)
+        row |= _run_worker(slug, tier, algo, timeout_s, processed_dir, sample)
     return row | machine_info()
 
 
-def _run_worker(slug, tier, algo, timeout_s, processed_dir):
+def _run_worker(slug, tier, algo, timeout_s, processed_dir, sample=None):
     cmd = [sys.executable, "-m", "apsp.bench_worker", slug, tier, algo,
-           "--processed-dir", str(processed_dir)]
+           "--processed-dir", str(processed_dir)] + (["--sample", str(sample)] if sample else [])
     env = os.environ | {"OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"}
     t0 = time.perf_counter()
     try:
@@ -99,10 +101,13 @@ def _run_worker(slug, tier, algo, timeout_s, processed_dir):
         return {"status": "error", "reason": last[:300], "wall_s": wall}
     r = json.loads(proc.stdout.strip().splitlines()[-1])
     algo_t, total_t = r.pop("algo_times_s"), r.pop("total_times_s")
-    r.pop("n"), r.pop("m")
+    n = r.pop("n")
+    r.pop("m")
+    scale = n / r["sources"]  # 1 for a full run
     return r | {
         "reason": "", "wall_s": wall,
         "algo_median_s": statistics.median(algo_t), "algo_min_s": min(algo_t),
+        "algo_full_estimate_s": statistics.median(algo_t) * scale,
         "total_median_s": statistics.median(total_t),
         "algo_times_s": " ".join(f"{t:.6g}" for t in algo_t),
         "peak_rss_mib": round(r.pop("peak_rss_bytes") / 2**20, 1),
