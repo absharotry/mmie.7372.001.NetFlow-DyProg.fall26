@@ -54,6 +54,8 @@ here.
   friend edges only; Wiki Conflict keeps every interacting pair. Both use **hop counts**.
 - Nodes with no links, self-loops and repeated edges are removed; none of them can change a
   shortest path.
+- The assumptions behind these choices, and their potential issues (including fractional arc
+  lengths after 1 / weight), are listed in Section 9.
 
 ### 2.3 Networks as used in the benchmark
 
@@ -326,7 +328,54 @@ Code (deliverables):
 - `scripts/`: the entry points listed above.
 - `tests/`: correctness tests.
 
-## 9. Limitations
+## 9. Assumptions and potential issues
+
+Every modeling and measurement assumption is listed here with what could go wrong and how we checked
+it. Full reasoning for the data decisions (D1-D6) is in `docs/decisions.md`.
+
+### 9.1 Turning strength weights into distances (distance = 1 / weight)
+
+Applies to US Airports (D1), Adolescent Health (D5) and Advogato (D6).
+
+| Assumption | Potential issue | How we checked it / why it is acceptable |
+|---|---|---|
+| A stronger tie (more passengers, more shared activities, higher trust) means a shorter distance, and 1 / weight is a sensible way to express that. | Other transformations (for example 7 - weight, -log(weight), or ignoring weights) give different shortest paths and different distance values. | Standard choice in the literature (Opsahl et al., 2010); alternatives are documented in `docs/decisions.md`. The **timings do not depend on it**: complexity depends on n and m, not on the edge values. Only the *meaning* of the distances does. |
+| Arc lengths may be fractions (e.g. 1/3, 1.25, 1/1,489,618). | Fractions are stored as 64-bit floating-point numbers, which round in the last digits (about 1 part in 10^16). Two paths that are exactly tied can then compare unequal, so implementations may pick different routes. | Neither algorithm needs whole-number lengths, only lengths >= 0. All tests compare with a tolerance. The five versions' mean distances agree to within 2e-15, so rounding never changed a reported result; only the choice between tied routes can differ, never the distance. Methods that require integer lengths (e.g. Dial's bucket algorithm) were not used. |
+| The same rule is used for all three strength-weighted networks. | How strongly 1 / weight favors detours depends on how spread out the weights are: direct links bypassed by a cheaper multi-step path were 86.9% (US Airports, weights span a million-fold), 8.0% (Adolescent Health, six-fold) and 0% (Advogato, 1.7-fold). Distances therefore mean different things in different datasets. | Distances are only compared *within* a dataset, never across datasets. The effect is reported in `docs/decisions.md`. |
+| Advogato's trust levels (apprentice, journeyer, master) are treated as the numbers 0.6, 0.8 and 1.0. | These are ordered categories, not measured quantities; 1 / level assumes "master" is exactly 1.67 times closer than "apprentice". | With these values a direct link is always shortest (2 x 1.00 > 1.67), so the levels only decide between routes with the *same number of steps*. Other numeric values for the levels could change that choice (and the distance values), but not the number of steps on a shortest route, as long as one step always costs less than two. |
+| US Airports weight = passengers on the route in 2010. | KONECT's README says "number of flights"; if that were right, distances would change. | The original source (Opsahl; BTS T-100) says passengers, and the totals match real 2010 airport traffic (e.g. ATL 43.0 million). Timings are unaffected either way. |
+| Adolescent Health weight = 1 + number of shared activities (1..6). | The mapping is inferred: KONECT's README sentence on it is garbled. A different increasing mapping would change the distances. | The 1..6 range and the five activities are confirmed by a secondary source (arXiv:0912.0161); "1 + count" is the only mapping consistent with both. Timings are unaffected. |
+| Every weight is strictly positive. | 1 / 0 would be infinite (equivalent to no edge). | Checked in code (`inverse_weights` refuses zero or negative weights); none occur in the three datasets. |
+
+### 9.2 Signed networks
+
+| Assumption | Potential issue | How we checked it / why it is acceptable |
+|---|---|---|
+| Signed weights cannot be distances. | The sign and size of interactions are not used in the distances. | Both networks contain negative cycles (Slashdot: 4,497 mutual-foe pairs; Wiki Conflict: every negative edge, since it is undirected), so shortest paths are undefined for any algorithm with the raw weights. Hop counts are the honest alternative (D2, D4). |
+| Slashdot keeps friend tags only; Wiki Conflict keeps all interactions. | The two signed networks follow different rules, so their distances mean different things. | Deliberate (D2 vs D4): on Slashdot the sign defines the relationship itself (friend vs foe); on Wiki Conflict both signs show that two editors worked on the same text. |
+| All edges have length 1 (hop counts). | Breadth-first search would solve these faster than Dijkstra. | Stated as an algorithm variant (Section 3.1); Dijkstra is timed anyway to compare like with like. |
+
+### 9.3 Cleaning the networks
+
+| Assumption | Potential issue | How we checked it / why it is acceptable |
+|---|---|---|
+| Nodes with no links are dropped. | n differs from the published counts: Advogato 6,541 -> 5,155, Slashdot 79,120 -> 69,995, Wiki Conflict 118,100 -> 116,836. | Such nodes can neither reach nor be reached, so they add only empty rows. Keeping them would make FW's table *larger*, which strengthens the infeasibility conclusions rather than weakening them. Both counts are reported (Section 2). |
+| Self-loops (Advogato) and repeated edges (Wiki Conflict) are removed. | m differs from the raw row counts. | A self-loop or a duplicate can never shorten a path. Duplicates are removed before building sparse matrices because scipy would otherwise *add* them together. |
+| Wiki Conflict (undirected) is stored as two one-way edges per pair. | m = 4,055,742, twice the number of editor pairs. | That is what the algorithms actually scan, so it is the right m for the complexity formulas. |
+| The data files are correct. | Two unexplained discrepancies: the Wiki Conflict file header claims 2,985,759 edges (the file and KONECT's website have 2,917,785), and we count 2,027,871 distinct editor pairs where KONECT reports 2,014,062. | Recorded in `data/SOURCES.md`; every file is pinned by a SHA-256 checksum, so the results are reproducible from the exact data used. |
+
+### 9.4 Measurement
+
+| Assumption | Potential issue | How we checked it / why it is acceptable |
+|---|---|---|
+| Timing covers the shortest-path computation only. | Loading data and building the input (which take seconds to a minute on the large networks) are excluded. | Applied identically to every version. scipy's FW includes a sparse-to-dense conversion inside its call; it is O(n^2) and negligible next to n^3. |
+| Our pure Dijkstra on Wiki Conflict is estimated from 1,000 random sources (time x n / 1,000). | The sampled sources might not be typical. | The sample's reachable share (93.1%) and mean distance (3.330) are close to the full scipy run's (93.8%, 3.322), so the sample is representative to within a few percent. |
+| FW times for the infeasible runs are extrapolated from Advogato. | Prediction error. | Two models give a range (21.5 h vs 12.8 h; 4 vs 6 days). The n^3 model predicted the other measured FW runs to within 0.96x-1.41x. The conclusion (hours to days) does not depend on which model is used. |
+| A run is infeasible if its memory estimate exceeds 60% of RAM (8 bytes per table cell in scipy, 16 in numpy, up to 32 in pure Python). | The memory model could be wrong. | On Advogato, scipy FW's measured memory increase (346 MiB) was about 1.7 times the table size (203 MiB), so the model *underestimates* memory: the real requirement for the large networks is even higher than stated. |
+| scipy's FW skips pairs (i, k) where i cannot reach k. | We inferred this from measurements, not from scipy's source code. | The evidence is strong: on random networks with n = 1,000 its time ranged from 0.005 s to about 0.46 s depending on density, which is impossible for a fixed n^3 loop. |
+| One machine, single thread. Long runs (over 10 s) were measured once. | Absolute times would differ on other hardware; single long runs carry some timing noise. | Ratios and complexity arguments do not depend on the machine. For short runs measured five times, the spread (slowest minus fastest, relative to the median) was 4% at the median and 12% at most, far smaller than the differences between algorithms (3x to 170x). |
+
+## 10. Limitations
 
 - Our pure-Python Dijkstra on Wiki Conflict is an **estimate** from 1,000 random sources, scaled to
   all 116,836. A full run takes about 7.7 hours.
