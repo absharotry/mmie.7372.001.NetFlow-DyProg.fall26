@@ -4,6 +4,16 @@ Course project (MMIE 7372, Network Flows). We compare all-pairs shortest paths c
 (a) running Dijkstra once from every node and (b) Floyd-Warshall, on five real networks:
 US Airports, Adolescent Health, Advogato, Slashdot Zoo, Wiki Conflict.
 
+## Assignment requirements (full text: docs/assignment.md)
+
+The report must cover, and be checked against:
+1. Both approaches implemented (n x Dijkstra, Floyd-Warshall) and compared on all five datasets.
+2. Network characteristics per dataset, including number of nodes and edges.
+3. Discussion: (a) performance of each algorithm across the five datasets; (b) how performance
+   changes with network size AND density; (c) which network structures favor which algorithm.
+4. Any run that cannot complete (time or memory): report it and explain via complexity.
+5. Deliverables: the discussion and the scripts.
+
 ## Working agreement (read this first)
 
 This is a learning project. Work in small steps.
@@ -73,6 +83,13 @@ Add to this list as soon as a new case is found.
   That is a label-correcting method, NOT Dijkstra: no "settled is final" guarantee, and worst-case
   running time can be exponential. Our wrappers forbid negative weights, so every Dijkstra timing in
   the report is genuine Dijkstra.
+- What each timing includes (apsp.bench_worker): "algo" time = the shortest-path computation only.
+  Building the input (CSR matrix, adjacency list, FW starting table) is untimed. Exception: scipy
+  `floyd_warshall` converts the sparse input to a dense n x n table inside the call, so its time
+  includes that O(n^2) step (negligible next to n^3). Summarizing the output is reported separately
+  as "total" time.
+- Dijkstra is run STREAMING in every tier (batches of sources via `indices=` in scipy, one source at
+  a time in pure), so it never holds the n x n table. Same algorithm; only the output handling differs.
 - The "pure" tier is not uniformly interpreted: our pure Dijkstra's priority queue is `heapq`, which
   is implemented in C. This favors Dijkstra inside the pure tier (US Airports: pure FW/Dijkstra = 32x,
   scipy = 3.3x, step-count theory = 8.3x). Report the ratio per tier, never across tiers.

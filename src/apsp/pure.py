@@ -61,22 +61,27 @@ def apsp_dijkstra(n, edges):
     return [dijkstra(adj, s) for s in range(n)]
 
 
-def apsp_floyd_warshall(n, edges):
-    """All-pairs shortest paths by Floyd-Warshall: Theta(n^3) time, Theta(n^2) memory.
+def initial_distance_table(n, edges):
+    """Floyd-Warshall's starting table: only direct edges are known.
 
-    Negative edge weights are allowed; a negative cycle raises ValueError.
-    Returns an n x n list of lists; row i holds the distances from node i.
+    dist[i][j] = weight of edge i -> j (inf if none), and 0 on the diagonal.
     """
-    # Start: only direct edges are known. dist[i][j] = weight of edge i -> j, inf if none.
     dist = [[math.inf] * n for _ in range(n)]
     for i in range(n):
         dist[i][i] = 0  # staying put costs nothing
     for u, v, w in edges:
         # Multi-edges: a shortest path can only ever use the cheapest parallel edge.
         dist[u][v] = min(dist[u][v], w)
+    return dist
 
-    # Invariant: after sweep k, dist[i][j] is the shortest i -> j path whose intermediate stops
-    # are all among nodes 0..k. The k loop MUST be the outermost loop for this to hold.
+
+def floyd_warshall_sweeps(dist):
+    """The Floyd-Warshall triple loop, updating `dist` in place. This is the part the benchmark times.
+
+    Invariant: after sweep k, dist[i][j] is the shortest i -> j path whose intermediate stops are
+    all among nodes 0..k. The k loop MUST be the outermost loop for this to hold.
+    """
+    n = len(dist)
     for k in range(n):  # the k-th intermediate-vertex sweep: now node k may be used as a stop
         dist_k = dist[k]
         for i in range(n):
@@ -89,9 +94,22 @@ def apsp_floyd_warshall(n, edges):
                 if d_ik + dist_k[j] < dist_i[j]:
                     dist_i[j] = d_ik + dist_k[j]
 
-    # Negative-cycle check: if some node can get back to itself for less than 0, then going round
-    # that loop again and again makes paths arbitrarily short, so "shortest" has no meaning.
-    for i in range(n):
+
+def check_no_negative_cycle(dist):
+    """If some node can get back to itself for less than 0, going round that loop again and again
+    makes paths arbitrarily short, so "shortest" has no meaning."""
+    for i in range(len(dist)):
         if dist[i][i] < 0:
             raise ValueError(f"graph contains a negative cycle through node {i}")
+
+
+def apsp_floyd_warshall(n, edges):
+    """All-pairs shortest paths by Floyd-Warshall: Theta(n^3) time, Theta(n^2) memory.
+
+    Negative edge weights are allowed; a negative cycle raises ValueError.
+    Returns an n x n list of lists; row i holds the distances from node i.
+    """
+    dist = initial_distance_table(n, edges)
+    floyd_warshall_sweeps(dist)
+    check_no_negative_cycle(dist)
     return dist

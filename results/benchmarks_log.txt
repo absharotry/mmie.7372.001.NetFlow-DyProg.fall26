@@ -1,0 +1,21 @@
+usairport     scipy  dijkstra        ok   algo      0.372 s (median of 5)   peak      131 MiB   reachable 2,209,653
+usairport     scipy  floyd_warshall  ok   algo      1.246 s (median of 5)   peak      131 MiB   reachable 2,209,653
+usairport     numpy  floyd_warshall  ok   algo      3.110 s (median of 5)   peak      152 MiB   reachable 2,209,653
+usairport     pure   dijkstra        ok   algo      2.132 s (median of 5)   peak       87 MiB   reachable 2,209,653
+usairport     pure   floyd_warshall  ok   algo     74.198 s (median of 1)   peak      163 MiB   reachable 2,209,653
+health        scipy  dijkstra        ok   algo      0.695 s (median of 5)   peak      188 MiB   reachable 5,473,916
+health        scipy  floyd_warshall  ok   algo      3.544 s (median of 5)   peak      200 MiB   reachable 5,473,916
+health        numpy  floyd_warshall  ok   algo     23.943 s (median of 1)   peak      239 MiB   reachable 5,473,916
+health        pure   dijkstra        ok   algo      2.955 s (median of 5)   peak       84 MiB   reachable 5,473,916
+health        pure   floyd_warshall  ok   algo    195.588 s (median of 1)   peak      300 MiB   reachable 5,473,916
+advogato      scipy  dijkstra        ok   algo      1.849 s (median of 5)   peak      440 MiB   reachable 16,177,614
+advogato      scipy  floyd_warshall  ok   algo     30.963 s (median of 1)   peak      439 MiB   reachable 16,177,614
+advogato      numpy  floyd_warshall  ok   algo    220.594 s (median of 1)   peak      696 MiB   reachable 16,177,614
+advogato      pure   dijkstra        ok   algo     10.411 s (median of 1)   peak       92 MiB   reachable 16,177,614
+advogato      pure   floyd_warshall  ok   algo   1759.326 s (median of 1)   peak      764 MiB   reachable 16,177,614
+slashdot      scipy  dijkstra        ok   algo    189.488 s (median of 1)   peak      801 MiB   reachable 1,777,768,126
+slashdot      scipy  floyd_warshall  INFEASIBLE: needs ~36.5 GiB, budget 14.4 GiB (60% of 24 GiB RAM)
+wikiconflict  scipy  dijkstra        ok   algo   1831.825 s (median of 1)   peak    1,192 MiB   reachable 12,796,704,262
+wikiconflict  scipy  floyd_warshall  INFEASIBLE: needs ~101.7 GiB, budget 14.4 GiB (60% of 24 GiB RAM)
+
+Results appended to /Users/absharotry/Claude/NetFlow1/results/benchmarks.csv

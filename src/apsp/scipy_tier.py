@@ -38,14 +38,19 @@ def edges_to_csr(n, edges):
     return csr_array((w, (u, v)), shape=(n, n))
 
 
+def check_nonnegative(graph):
+    """Guard for genuine Dijkstra: scipy itself only warns on negative weights (see module doc)."""
+    if graph.nnz and graph.data.min() < 0:
+        raise ValueError("Dijkstra requires nonnegative weights; graph has negative edges")
+
+
 def apsp_dijkstra_scipy(graph):
     """n x Dijkstra via scipy (C implementation, Fibonacci-heap priority queue). Returns n x n array.
 
     With no `indices` argument scipy runs Dijkstra from every node and returns the full n x n table.
     (For large n the benchmark will instead pass batches of sources; that comes in Phase 3.)
     """
-    if graph.nnz and graph.data.min() < 0:
-        raise ValueError("Dijkstra requires nonnegative weights; graph has negative edges")
+    check_nonnegative(graph)
     return dijkstra(graph, directed=True)
 
 
