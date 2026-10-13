@@ -1,0 +1,40 @@
+,value
+name,Advogato
+directed,yes
+n,"5,155"
+m (edge rows),"47,135"
+m (distinct pairs),"47,135"
+one-way edges (algorithms),"47,135"
+duplicate rows,0
+self-loops,0
+density m/(n(n-1)),0.001774
+reciprocity,0.3331
+weak components,57
+largest weak comp.,"5,042"
+strong components,"1,981"
+largest strong comp.,"3,140"
+nodes with out-degree 0,"1,146"
+nodes with in-degree 0,733
+reachable pair fraction,0.6089
+out-degree min,0
+out-degree median,3
+out-degree mean,9.144
+out-degree max,785
+in-degree min,0
+in-degree median,3
+in-degree mean,9.144
+in-degree max,721
+raw weight all equal,no
+raw weight negative share,0
+raw weight zero share,0
+raw weight min,0.6
+raw weight median,0.8
+raw weight mean,0.8291
+raw weight max,1
+distance all equal,no
+distance negative share,0
+distance zero share,0
+distance min,1
+distance median,1.25
+distance mean,1.235
+distance max,1.667

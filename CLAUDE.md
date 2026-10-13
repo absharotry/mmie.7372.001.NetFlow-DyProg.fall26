@@ -19,7 +19,7 @@ This is a learning project. Work in small steps.
 
 - [x] 0. Environment: git init + .gitignore, venv, install requirements, freeze `requirements-lock.txt`, repo layout
 - [x] 1. Implement + validate both algorithms on toy graphs (hand-checkable example + random small graphs vs networkx)
-- [ ] 2. Load/preprocess datasets; record characteristics (n, m, density, degree stats, components, weighted/signed, reachable-pair fraction).
+- [x] 2. Load/preprocess datasets; record characteristics (n, m, density, degree stats, components, weighted/signed, reachable-pair fraction).
       Record source URL + SHA-256 checksum of every downloaded archive.
 - [ ] 3. Benchmark harness: wall time, peak memory, timeout, feasibility pre-check (estimate n² memory, n³ ops before running)
 - [ ] 4. Run datasets smallest → largest; report infeasible runs with complexity-based explanation
@@ -84,7 +84,8 @@ Decided items are logged in `docs/decisions.md` (with a plain-language explanati
       D4, D4b in docs/decisions.md.
 - [x] US Airports: distance = 1 / passengers; nodes = the 1,574 airports with routes (D1 in docs/decisions.md).
 - [x] Adolescent Health: distance = 1 / weight (weights 1..6), same rule as D1; no nodes dropped (D5).
-- [ ] Advogato (strength-type trust weights): raw, 1/w, -log w, or unweighted?
+- [x] Advogato: distance = 1 / trust level; self-certifications and unlinked users dropped
+      (n = 5,155). D6, D6b, D6c.
 - [ ] Directed vs undirected treatment per dataset (keep native direction unless decided otherwise).
 - [ ] Multi-edges (e.g. Wiki Conflict has repeated/timestamped edges): keep min, keep one, or aggregate?
 

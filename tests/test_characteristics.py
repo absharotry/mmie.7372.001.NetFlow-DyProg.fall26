@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 from apsp.characteristics import describe
-from apsp.loaders import (RAW_DIR, Dataset, compact_ids, load_health, load_slashdot,
-                          load_usairport, load_wikiconflict)
+from apsp.loaders import (RAW_DIR, Dataset, compact_ids, load_advogato, load_health,
+                          load_slashdot, load_usairport, load_wikiconflict)
 
 
 def test_compact_ids_uses_first_appearance_order():
@@ -75,3 +75,13 @@ def test_health_raw_counts():
     assert ds.n == 2_539 and len(ds.u) == 12_969  # KONECT header: % 12969 2539 2539
     assert set(np.unique(ds.w).tolist()) == {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}
     assert np.bincount(ds.u).max() <= 10  # survey: at most 5 female + 5 male friends
+
+
+@pytest.mark.skipif(not (RAW_DIR / "advogato" / "advogato.csv.zip").exists(),
+                    reason="raw Advogato data not downloaded")
+def test_advogato_raw_counts():
+    ds = load_advogato()
+    assert ds.n == 6_541 and len(ds.u) == 51_127  # Netzschleuder num_vertices / num_edges
+    assert set(np.unique(ds.w).tolist()) == {0.6, 0.8, 1.0}  # observer (0.4) never occurs
+    assert int((ds.u == ds.v).sum()) == 3_992  # self-certifications
+    assert len(set(ds.labels)) == 6_541

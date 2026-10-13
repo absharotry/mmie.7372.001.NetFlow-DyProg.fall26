@@ -140,3 +140,32 @@ def load_health(raw_dir=RAW_DIR):
         weight_meaning="1 + number of shared activities (1..6)",  # a strength, not a distance
         source="http://konect.uni-koblenz.de/networks/moreno_health",
     )
+
+
+def load_advogato(raw_dir=RAW_DIR):
+    """Advogato trust network (Netzschleuder advogato = KONECT advogato), RAW, with usernames.
+
+    Directed: u -> v means "u certified v". Weight = trust level: apprentice 0.6, journeyer 0.8,
+    master 1.0 (observer 0.4 is documented but never occurs). Includes 3,992 self-certifications.
+    Read straight from the downloaded zip (SHA-256 in data/SOURCES.md).
+    """
+    path = Path(raw_dir) / "advogato" / "advogato.csv.zip"
+    with zipfile.ZipFile(path) as zf:
+        with zf.open("edges.csv") as f:
+            edges = pd.read_csv(f, comment="#", header=None, names=["u", "v", "w"],
+                                dtype={"u": np.int64, "v": np.int64, "w": float})
+        with zf.open("nodes.csv") as f:
+            nodes = pd.read_csv(f, comment="#", header=None, names=["i", "name", "pos"],
+                                dtype={"i": np.int64, "name": str})
+    labels = nodes.sort_values("i")["name"].tolist()
+    return Dataset(
+        name="Advogato",
+        n=len(labels),  # 6,541
+        u=edges["u"].to_numpy(),
+        v=edges["v"].to_numpy(),
+        w=edges["w"].to_numpy(),
+        directed=True,
+        weight_meaning="trust level (0.6 apprentice, 0.8 journeyer, 1.0 master)",
+        labels=labels,
+        source="https://networks.skewed.de/net/advogato/files/advogato.csv.zip",
+    )

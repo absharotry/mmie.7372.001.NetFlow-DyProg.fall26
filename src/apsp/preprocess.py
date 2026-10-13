@@ -8,10 +8,21 @@ from pathlib import Path
 
 import numpy as np
 
-from apsp.loaders import (Dataset, compact_ids, load_health, load_slashdot, load_usairport,
-                          load_wikiconflict)
+from apsp.loaders import (Dataset, compact_ids, load_advogato, load_health, load_slashdot,
+                          load_usairport, load_wikiconflict)
 
 PROCESSED_DIR = Path(__file__).resolve().parents[2] / "data" / "processed"
+
+
+def drop_self_loops(ds):
+    """Decision D6b: remove edges from a node to itself (Advogato self-certifications).
+
+    A node's distance to itself is 0 by definition, so a self-loop can never be on a shortest path;
+    it only adds edges for Dijkstra to scan. Run this BEFORE drop_isolated, so that nodes whose only
+    edge was a self-loop are dropped as isolated.
+    """
+    keep = ds.u != ds.v
+    return replace(ds, u=ds.u[keep], v=ds.v[keep], w=ds.w[keep])
 
 
 def drop_isolated(ds):
@@ -37,7 +48,7 @@ def undirected_hops(ds):
 
 
 def inverse_weights(ds):
-    """Decisions D1 and D5: distance = 1 / weight, so strong edges become short.
+    """Decisions D1, D5 and D6: distance = 1 / weight, so strong edges become short.
 
     Requires every weight > 0. A zero weight would become an infinite distance, which is the same as
     no edge, so it should have been dropped before this point (the US airport source already
@@ -87,6 +98,7 @@ PIPELINES = {
     "wikiconflict": (load_wikiconflict, [drop_isolated, undirected_hops]),  # D2b, then D2 + D3
     "slashdot": (load_slashdot, [friends_only_hops, drop_isolated]),  # D4, then D4b
     "health": (load_health, [inverse_weights]),  # D5 (same rule as D1)
+    "advogato": (load_advogato, [drop_self_loops, drop_isolated, inverse_weights]),  # D6b, D6c, D6
 }
 
 

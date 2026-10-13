@@ -237,3 +237,83 @@ news or influence could plausibly travel: through the close mutual friend.
   airports' 3.2. Fewer hubs means fewer shortcuts.
 - **Floating point:** distances like 1/3 and 1/6 are not exact in binary, so tests compare with a
   tolerance (as for D1).
+
+---
+
+## D6. Advogato: distance = 1 / trust level (decided 2026-10-12)
+
+### What we chose
+The same rule as US Airports (D1) and Adolescent Health (D5): **distance = 1 / weight**, direction
+kept. An edge "A certified B" has a trust level of apprentice (0.6), journeyer (0.8) or master (1.0).
+
+| Level | Weight | Distance |
+|---|---|---|
+| master | 1.0 | 1.00 |
+| journeyer | 0.8 | 1.25 |
+| apprentice | 0.6 | 1.67 |
+
+### Plain-language explanation
+On Advogato, open-source developers vouched for each other's skill. A higher level means stronger
+trust, so we flip it (1 / level) to get a distance where stronger trust means closer.
+
+Something special happens with this dataset: **a direct certification is always the shortest
+route.** The cheapest possible step costs 1.00 (master) and the most expensive costs 1.67
+(apprentice). Any chain of two or more steps costs at least 1.00 + 1.00 = 2.00, which is more than
+the dearest single step. So the trust levels never make a detour worthwhile. They only decide
+between routes with the *same* number of steps, preferring those through "master" certifications.
+In practice, distance here means "the fewest certification steps, with ties broken by trust level".
+
+### Why this option
+- **One rule for all three strength-weighted datasets** (D1, D5, D6).
+- The standard transformation in the literature (Opsahl et al., 2010).
+
+### Alternatives considered
+| Option | Why not chosen |
+|---|---|
+| Hops (ignore levels) | discards the trust levels; under 1/w they still break ties |
+| -log(level) (trust as a probability multiplied along a chain) | master = -log 1 = 0, so chains of masters would cost nothing (zero-weight edges, and an odd meaning) |
+
+### Consequences (must be discussed in the report)
+- **The same rule behaves very differently depending on how spread out the weights are.** Share of
+  direct links that lose to a multi-step chain under 1/w:
+
+  | Dataset | Weight range | Direct links bypassed |
+  |---|---|---|
+  | US Airports | 1 .. 1,489,618 | 86.9% |
+  | Adolescent Health | 1 .. 6 | 8.0% |
+  | Advogato | 0.6 .. 1.0 | 0% (impossible: 2 x 1.00 > 1.67) |
+
+- The "observer" level (0.4) is documented but never occurs in the data.
+
+## D6b. Advogato: drop self-certifications (decided 2026-10-12)
+
+3,992 edges (7.8%) are users certifying themselves. We **remove them**.
+
+*Plain language:* rating your own skill is not a link between two people. Your distance to yourself
+is 0 by definition, so a self-loop can never be part of a shortest path. Keeping them would only
+give Dijkstra 3,992 extra edges to scan for nothing, and would inflate m in the complexity formulas.
+
+## D6c. Advogato: drop users with no links to others (decided 2026-10-12)
+
+The D2b rule, applied **after** D6b. 2 users appear in no edge, and 1,384 more only certified
+themselves, so 1,386 users have no link to anyone else: **n = 6,541 -> 5,155**, edges 51,127 -> 47,135.
+
+---
+
+## Summary: all five datasets after preprocessing
+
+| Dataset | Directed | n | One-way edges | Distance | Decisions | FW table (float64) |
+|---|---|---|---|---|---|---|
+| US Airports | yes | 1,574 | 28,236 | 1 / passengers | D1 | 19 MiB |
+| Adolescent Health | yes | 2,539 | 12,969 | 1 / (1 + shared activities) | D5 | 49 MiB |
+| Advogato | yes | 5,155 | 47,135 | 1 / trust level | D6, D6b, D6c | 203 MiB |
+| Slashdot Zoo | yes | 69,995 | 392,179 | hops, friend tags only | D4, D4b | 36.5 GiB |
+| Wiki Conflict | no (stored both ways) | 116,836 | 4,055,742 | hops, all interactions | D2, D2b, D3 | 101.7 GiB |
+
+Rules in one sentence each:
+- **Strength weights** (passengers, shared activities, trust): distance = 1 / weight.
+- **Signed weights** (friend/foe, agree/disagree): negative loops make raw weights unusable. Slashdot
+  keeps friend tags only (the sign defines the relationship); Wiki Conflict keeps every interaction
+  (both signs show two editors worked on the same text). Both use hops.
+- **Nodes with no links** are dropped everywhere; **self-loops and repeats** never affect a
+  shortest path and are removed.

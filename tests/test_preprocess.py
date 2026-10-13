@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 from apsp.loaders import Dataset
-from apsp.preprocess import (drop_isolated, friends_only_hops, inverse_weights, load_processed,
-                            save_processed, undirected_hops)
+from apsp.preprocess import (drop_isolated, drop_self_loops, friends_only_hops, inverse_weights,
+                            load_processed, save_processed, undirected_hops)
 from apsp.scipy_tier import apsp_dijkstra_scipy, edges_to_csr
 
 
@@ -86,3 +86,24 @@ def test_friends_only_removes_foes_and_mutual_foe_cycle():
     dist = apsp_dijkstra_scipy(edges_to_csr(out.n, list(zip(out.u, out.v, out.w))))
     assert dist[0].tolist() == [0, 1, 2]  # direction kept: forward chain reachable...
     assert dist[2, 0] == np.inf  # ...but not backwards
+
+
+# --- Advogato decisions (D6, D6b, D6c) --------------------------------------------------------------
+
+def test_self_loops_removed_then_self_only_node_is_isolated():
+    # Node 2 only certified itself; node 0 certified itself and node 1.
+    ds = Dataset("adv-mini", 3, u=np.array([0, 0, 2]), v=np.array([0, 1, 2]),
+                 w=np.array([0.8, 1.0, 0.6]), directed=True, weight_meaning="trust",
+                 labels=["ann", "bob", "cy"])
+    out = inverse_weights(drop_isolated(drop_self_loops(ds)))
+    assert out.n == 2 and out.labels == ["ann", "bob"]  # "cy" had only a self-loop: dropped
+    assert out.u.tolist() == [0] and out.v.tolist() == [1] and out.w.tolist() == [1.0]
+
+
+def test_advogato_levels_never_detour():
+    # Under 1/w the cheapest step is 1.0 (master) and the dearest 1/0.6 = 1.67 (apprentice), so any
+    # two-step chain (>= 2.0) loses to a direct certification, even the weakest one.
+    ds = inverse_weights(Dataset("adv", 3, u=np.array([0, 0, 1]), v=np.array([2, 1, 2]),
+                                 w=np.array([0.6, 1.0, 1.0]), directed=True, weight_meaning="trust"))
+    dist = apsp_dijkstra_scipy(edges_to_csr(ds.n, list(zip(ds.u, ds.v, ds.w))))
+    assert dist[0, 2] == pytest.approx(1 / 0.6)  # direct apprentice link beats master -> master

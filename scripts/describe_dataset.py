@@ -9,6 +9,7 @@ results/distributions_<slug>.png.
 """
 
 import sys
+import textwrap
 from pathlib import Path
 
 import matplotlib
@@ -90,12 +91,14 @@ def describe_one(slug):
         axes[1].set(xlabel="log10(raw weight)")
     elif (raw.w > 0).all():  # a few small values (e.g. 1..6): one bar per value
         values, counts = np.unique(raw.w, return_counts=True)
-        axes[1].bar(values, counts, color="#4c72b0")
-        axes[1].set(xlabel=f"raw weight ({raw.weight_meaning})")
+        width = 0.8 * (np.diff(values).min() if len(values) > 1 else 1)  # bars must not overlap
+        axes[1].bar(values, counts, width=width, color="#4c72b0")
+        axes[1].set_xticks(values)
+        axes[1].set(xlabel=textwrap.fill(f"raw weight: {raw.weight_meaning}", 55))
     else:
         axes[1].hist(raw.w, bins=80, color="#4c72b0")
         axes[1].axvline(0, color="black", linewidth=0.8)
-        axes[1].set(xlabel=f"raw weight ({raw.weight_meaning})")
+        axes[1].set(xlabel=textwrap.fill(f"raw weight: {raw.weight_meaning}", 55))
     axes[1].set(ylabel="number of edge rows", title="Raw weight distribution")
     fig.suptitle(ds.name)
     fig.tight_layout()

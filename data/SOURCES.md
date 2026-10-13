@@ -99,3 +99,24 @@ Notes (verified 2026-10-12):
   weight shows that there is no common activity at all", number missing). The 1..6 range and the
   5-activity design are described in a secondary source (arXiv:0912.0161); the exact "1 + count"
   mapping is our inference, consistent with both.
+
+## Advogato (`data/raw/advogato/`)
+
+| File | Source | SHA-256 |
+|---|---|---|
+| `advogato.csv.zip` | https://networks.skewed.de/net/advogato/files/advogato.csv.zip (downloaded 2026-10-12; URL given by the user) | `4c2fad93f1d02585300febb48f22a133115c5b96a9324aefeaf43283ffbb64e6` |
+| `edges.csv` (in zip) | source, target, weight | `a7522f659331decb987d3fbca5bbc5bf8b86b814c26407eb36f65e71cd5d4aa6` |
+| `nodes.csv` (in zip) | index, username ("meta"), drawing position | `fa21d16b4fe67a330c42cadf8fd5e35d4f1d7613b5701345d611021f0bd0e840` |
+| `gprops.csv` (in zip) | metadata | `87e9a6c0340959a8310b6647684a5c7089ffc64ed06c98fc8e4f75b70fd1018c` |
+
+Metadata: https://networks.skewed.de/api/net/advogato. Original: KONECT advogato; P. Massa,
+M. Salvetti, D. Tomasoni (2009), "Bowling alone and trust decline in social network sites", IEEE DASC.
+
+Notes (verified 2026-10-12):
+- **Directed:** u -> v means "u certified v". Weight = declared trust level: observer 0.4,
+  apprentice 0.6, journeyer 0.8, master 1.0 (Netzschleuder description).
+- **Observer level absent:** no row has weight 0.4. Counts: 0.6: 10,554; 0.8: 22,570; 1.0: 18,003.
+- **Size:** 51,127 rows, 6,541 nodes, matching Netzschleuder. No duplicate rows. Ids 0-based.
+- **Self-loops:** 3,992 rows (7.8%) are users certifying themselves.
+- **Nodes:** all 6,541 have unique usernames. 2 ids appear in no row; 1,384 more appear only in
+  self-loops, so 1,386 users have no link to anyone else.
