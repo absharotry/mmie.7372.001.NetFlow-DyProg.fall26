@@ -31,20 +31,21 @@ This is a learning project. Work in small steps.
 - [x] 1. Implement + validate both algorithms on toy graphs (hand-checkable example + random small graphs vs networkx)
 - [x] 2. Load/preprocess datasets; record characteristics (n, m, density, degree stats, components, weighted/signed, reachable-pair fraction).
       Record source URL + SHA-256 checksum of every downloaded archive.
-- [ ] 3. Benchmark harness: wall time, peak memory, timeout, feasibility pre-check (estimate n² memory, n³ ops before running)
-- [ ] 4. Run datasets smallest → largest; report infeasible runs with complexity-based explanation
+- [x] 3. Benchmark harness: wall time, peak memory, timeout, feasibility pre-check (estimate n² memory, n³ ops before running)
+- [~] 4. Run datasets smallest → largest; report infeasible runs with complexity-based explanation
+      (done: 3 small datasets in all tiers, 2 large in scipy; pending: pure Dijkstra on the 2 large)
 - [ ] 5. Synthetic density sweep (fixed n, vary density) to locate the crossover
 - [ ] 6. Analysis + write-up
 
-## Paused here (2026-10-12): open questions before Phase 3
+## Status (2026-10-13)
 
-The user wants every dataset run in every tier (scipy Dijkstra/FW, numpy FW, pure Dijkstra/FW; there
-is no numpy Dijkstra). Infeasible combinations (FW on Slashdot and Wiki in every tier) get recorded by
-the feasibility pre-check, not attempted. Still to decide:
-- [ ] Pure Dijkstra on Wiki Conflict (~7 h): A = full overnight run, B = sample ~1,000 sources and
-      extrapolate (label as estimate), or both.
-- [ ] Time limits: proposed 30 min default, 1 h for scipy Dijkstra on Wiki, 10 h for pure Dijkstra on Wiki.
-- Needed in Phase 3 regardless: a streaming pure Dijkstra (aggregate each row, then discard it).
+Draft report: docs/comparison_report.md (Section 8 lists pending items). Results: results/benchmarks.csv,
+results/report_tables.md, figures from scripts/make_report.py. Still to decide with the user:
+- [ ] Pure Dijkstra on Slashdot (~10-20 min) and Wiki Conflict (~7 h): full run, or sample + extrapolate.
+- [ ] Phase 5 density sweep (fixed n, increasing density) for discussion points (b) and (c).
+- [ ] Submission format for the discussion (Markdown, PDF or Word).
+- Known measurement caveat: on small datasets, peak memory mostly reflects the 256 MiB chunk size in
+  bench_worker (whole table fits in one chunk), not the algorithm.
 
 ## Implementation tiers
 
