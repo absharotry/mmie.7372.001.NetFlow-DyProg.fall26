@@ -118,3 +118,25 @@ def load_slashdot(raw_dir=RAW_DIR):
         weight_meaning="+1 friend, -1 foe",
         source="https://networks.skewed.de/net/slashdot_zoo/files/slashdot_zoo.csv.zip",
     )
+
+
+def load_health(raw_dir=RAW_DIR):
+    """Adolescent Health friendship network (KONECT moreno_health), RAW.
+
+    Directed: u -> v means "student u named student v as a friend" (at most 10 named per student).
+    Weight 1..6 = 1 + number of 5 shared activities (inferred mapping; see data/SOURCES.md).
+    Ids 1..2539 are all used, so a shift to 0-based is enough.
+    """
+    path = Path(raw_dir) / "health" / "out.moreno_health_health"
+    df = pd.read_csv(path, sep=r"\s+", comment="%", header=None, names=["u", "v", "w"],
+                     dtype={"u": np.int64, "v": np.int64, "w": float})
+    return Dataset(
+        name="Adolescent Health",
+        n=2_539,  # from the header line "% 12969 2539 2539"
+        u=df["u"].to_numpy() - 1,
+        v=df["v"].to_numpy() - 1,
+        w=df["w"].to_numpy(),
+        directed=True,
+        weight_meaning="1 + number of shared activities (1..6)",  # a strength, not a distance
+        source="http://konect.uni-koblenz.de/networks/moreno_health",
+    )

@@ -85,9 +85,13 @@ def describe_one(slug):
     axes[0].set(xlabel="degree k", ylabel="fraction of nodes with degree >= k",
                 title="Degree distribution (CCDF)")
     axes[0].legend()
-    if (raw.w > 0).all():
+    if (raw.w > 0).all() and raw.w.max() / raw.w.min() > 100:  # wide range: log scale
         axes[1].hist(np.log10(raw.w), bins=40, color="#4c72b0")
         axes[1].set(xlabel="log10(raw weight)")
+    elif (raw.w > 0).all():  # a few small values (e.g. 1..6): one bar per value
+        values, counts = np.unique(raw.w, return_counts=True)
+        axes[1].bar(values, counts, color="#4c72b0")
+        axes[1].set(xlabel=f"raw weight ({raw.weight_meaning})")
     else:
         axes[1].hist(raw.w, bins=80, color="#4c72b0")
         axes[1].axvline(0, color="black", linewidth=0.8)

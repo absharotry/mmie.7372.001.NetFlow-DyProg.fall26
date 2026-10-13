@@ -72,3 +72,30 @@ Notes (verified 2026-10-12):
 - **Nodes:** 79,120 ids; 79,116 appear in an edge (4 have no edges).
 - **Negative cycles:** 4,497 pairs of users mark each other as foes. Each is a negative 2-cycle
   (-1 + -1 = -2), so with raw weights as distances, shortest paths are undefined.
+
+## Adolescent Health (`data/raw/health/`)
+
+| File | Source | SHA-256 |
+|---|---|---|
+| `out.moreno_health_health` | KONECT moreno_health, http://konect.uni-koblenz.de/networks/moreno_health (supplied by the user; file date 2019-09-23) | `3452e794d6b92ace0d5484d1aa89c12d1566753a1838fc8d0943970b378a6105` |
+| `README.moreno_health` | KONECT (same archive) | `7b19b98b89e0847562de4bcea72bd35e9dbe396b881ad86f9789e10741518b55` |
+| `meta.moreno_health_health` | KONECT (same archive) | `a8c72b1a576783f0246aab5783c60f2b08ef0542e80dc3b2c9dc23ac2f96f1ad` |
+
+The folder also contains `.ipynb_checkpoints/` (two 2019 notebooks, Dijkstra and Floyd_Warshall).
+They are not data and are not used by this project.
+
+Original study: J. Moody (2001), "Peer influence groups: identifying dense clusters in large
+networks", *Social Networks* 23(4), 261-283. Data: National Longitudinal Study of Adolescent Health
+(Add Health), 1994/95 survey.
+
+Notes (verified 2026-10-12):
+- **Format:** `% asym posweighted`, header `% 12969 2539 2539`, which matches the file: 12,969 rows,
+  2,539 nodes, every id used, no self-loops, no duplicate rows.
+- **Directed:** u -> v means "student u named student v as a friend". Students could name up to
+  5 female and 5 male friends, so out-degree is at most 10 (verified: max 10).
+- **Weights 1..6:** 1 + the number of 5 shared activities (visited the friend's house, met after
+  school, spent time last weekend, talked about a problem, talked on the phone), so 1 = named as a
+  friend but no shared activity, 6 = all five. KONECT's README sentence on this is garbled ("a edge
+  weight shows that there is no common activity at all", number missing). The 1..6 range and the
+  5-activity design are described in a secondary source (arXiv:0912.0161); the exact "1 + count"
+  mapping is our inference, consistent with both.

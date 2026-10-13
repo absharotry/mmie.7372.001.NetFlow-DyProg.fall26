@@ -184,3 +184,56 @@ they cannot appear in any friend chain. Keeping them would only add empty rows t
 The out-degree distribution drops sharply near 200 tags, and a handful of users sit at about 400
 (max 426). This looks like a **site limit** on how many users one person could tag. We have not found
 a source that confirms it.
+
+---
+
+## D5. Adolescent Health: distance = 1 / weight (decided 2026-10-12)
+
+### What we chose
+The same rule as US Airports (D1). Each friendship nomination "A named B" has a weight from 1 to 6,
+equal to 1 + the number of five activities the two did together. We set **distance = 1 / weight**,
+direction kept. All 2,539 students have at least one friendship, so no nodes are dropped.
+
+| Weight | Meaning | Distance |
+|---|---|---|
+| 1 | named as a friend, no shared activity | 1 |
+| 2 | one shared activity | 0.5 |
+| 3 | two | 0.33 |
+| 4 | three | 0.25 |
+| 5 | four | 0.2 |
+| 6 | all five | 0.17 |
+
+### Plain-language explanation
+Students who do more things together are closer friends. Shortest-path algorithms need the
+opposite (a smaller number means closer), so we flip the scale with 1 / weight: a friendship with
+all five shared activities becomes a short step (0.17), and a "named but did nothing together"
+friendship becomes a long step (1).
+
+Sometimes this means the closest route between two students is not their direct link. If A named B
+but they did nothing together (cost 1), while A and C are close friends and C and B are close
+friends (cost 0.17 + 0.17 = 0.33), the shortest route from A to B goes through C. That matches how
+news or influence could plausibly travel: through the close mutual friend.
+
+### Why this option
+- **Consistency:** the same rule as the other strength-weighted dataset (US Airports, D1), so the
+  report can state one rule for "strength" weights.
+- It is the standard transformation in the literature (Opsahl, Agneessens, Skvoretz, 2010).
+- It behaves mildly here: only **8.0%** of direct friendships lose to a multi-step path, almost all
+  of them weight-1 ("no shared activity") ties, 25% of which are bypassed. Compare 86.9% for US
+  Airports, where weights span a million-fold range instead of six-fold.
+
+### Alternatives considered
+| Option | Why not chosen |
+|---|---|
+| 7 - weight (reverse the scale: 6 .. 1) | reasonable (4.2% of direct ties bypassed), but a less common choice that would need its own justification, and it differs from D1 |
+| Hops (ignore activities) | discards the activity information |
+
+### Consequences (must be discussed in the report)
+- The weight mapping (1 + number of activities) is **inferred**: KONECT's README sentence about it is
+  garbled, and a secondary source confirms only the 1..6 range and the five activities. See
+  data/SOURCES.md.
+- **No hubs:** the survey allowed at most 10 nominations, so out-degree is at most 10 and the most
+  popular student has in-degree 27. Paths are long: 6.3 hops on average, up to 18, about twice the
+  airports' 3.2. Fewer hubs means fewer shortcuts.
+- **Floating point:** distances like 1/3 and 1/6 are not exact in binary, so tests compare with a
+  tolerance (as for D1).

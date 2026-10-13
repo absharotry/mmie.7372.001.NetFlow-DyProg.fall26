@@ -1,0 +1,40 @@
+,value
+name,Adolescent Health
+directed,yes
+n,"2,539"
+m (edge rows),"12,969"
+m (distinct pairs),"12,969"
+one-way edges (algorithms),"12,969"
+duplicate rows,0
+self-loops,0
+density m/(n(n-1)),0.002013
+reciprocity,0.3877
+weak components,1
+largest weak comp.,"2,539"
+strong components,368
+largest strong comp.,"2,155"
+nodes with out-degree 0,226
+nodes with in-degree 0,98
+reachable pair fraction,0.8495
+out-degree min,0
+out-degree median,5
+out-degree mean,5.108
+out-degree max,10
+in-degree min,0
+in-degree median,4
+in-degree mean,5.108
+in-degree max,27
+raw weight all equal,no
+raw weight negative share,0
+raw weight zero share,0
+raw weight min,1
+raw weight median,3
+raw weight mean,2.909
+raw weight max,6
+distance all equal,no
+distance negative share,0
+distance zero share,0
+distance min,0.1667
+distance median,0.3333
+distance mean,0.5017
+distance max,1

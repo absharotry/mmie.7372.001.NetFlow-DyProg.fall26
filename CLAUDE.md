@@ -83,7 +83,8 @@ Decided items are logged in `docs/decisions.md` (with a plain-language explanati
       (n = 69,995). 4,497 mutual-foe pairs = negative 2-cycles, so raw weights were unusable.
       D4, D4b in docs/decisions.md.
 - [x] US Airports: distance = 1 / passengers; nodes = the 1,574 airports with routes (D1 in docs/decisions.md).
-- [ ] Strength-type weights (Advogato, Adolescent Health): raw, 1/w, -log w, or unweighted?
+- [x] Adolescent Health: distance = 1 / weight (weights 1..6), same rule as D1; no nodes dropped (D5).
+- [ ] Advogato (strength-type trust weights): raw, 1/w, -log w, or unweighted?
 - [ ] Directed vs undirected treatment per dataset (keep native direction unless decided otherwise).
 - [ ] Multi-edges (e.g. Wiki Conflict has repeated/timestamped edges): keep min, keep one, or aggregate?
 

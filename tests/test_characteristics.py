@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 from apsp.characteristics import describe
-from apsp.loaders import (RAW_DIR, Dataset, compact_ids, load_slashdot, load_usairport,
-                          load_wikiconflict)
+from apsp.loaders import (RAW_DIR, Dataset, compact_ids, load_health, load_slashdot,
+                          load_usairport, load_wikiconflict)
 
 
 def test_compact_ids_uses_first_appearance_order():
@@ -66,3 +66,12 @@ def test_slashdot_raw_counts():
     ds = load_slashdot()
     assert ds.n == 79_120 and len(ds.u) == 515_397  # Netzschleuder num_vertices / num_edges
     assert set(np.unique(ds.w).tolist()) == {-1.0, 1.0}
+
+
+@pytest.mark.skipif(not (RAW_DIR / "health" / "out.moreno_health_health").exists(),
+                    reason="raw Adolescent Health data not downloaded")
+def test_health_raw_counts():
+    ds = load_health()
+    assert ds.n == 2_539 and len(ds.u) == 12_969  # KONECT header: % 12969 2539 2539
+    assert set(np.unique(ds.w).tolist()) == {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}
+    assert np.bincount(ds.u).max() <= 10  # survey: at most 5 female + 5 male friends
