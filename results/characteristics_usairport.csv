@@ -1,0 +1,32 @@
+,value
+name,US Airports
+directed,True
+n,1574
+m (edge rows),28236
+m (distinct pairs),28236
+duplicate rows,0
+self-loops,0
+density m/(n(n-1)),0.011404328604282398
+reciprocity,0.7806346508003966
+weighted,True
+signed (any w<0),False
+zero weights,0
+weak components,2
+largest weak comp.,1572
+strong components,171
+largest strong comp.,1402
+nodes with out-degree 0,96
+nodes with in-degree 0,70
+reachable pair fraction,0.892463837421675
+out-degree min,0
+out-degree median,4.0
+out-degree mean,17.939008894536215
+out-degree max,302
+in-degree min,0
+in-degree median,4.0
+in-degree mean,17.939008894536215
+in-degree max,294
+weight min,1.0
+weight median,154.0
+weight mean,28025.699213769654
+weight max,1489618.0
