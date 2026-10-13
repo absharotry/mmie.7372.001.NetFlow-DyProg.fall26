@@ -4,7 +4,8 @@ import numpy as np
 import pytest
 
 from apsp.characteristics import describe
-from apsp.loaders import RAW_DIR, Dataset, compact_ids, load_usairport, load_wikiconflict
+from apsp.loaders import (RAW_DIR, Dataset, compact_ids, load_slashdot, load_usairport,
+                          load_wikiconflict)
 
 
 def test_compact_ids_uses_first_appearance_order():
@@ -57,3 +58,11 @@ def test_wikiconflict_raw_counts():
     ds = load_wikiconflict()
     assert ds.n == 118_100 and len(ds.u) == 2_917_785  # matches KONECT website, not the stale header
     assert (ds.u < ds.v).all()  # each undirected pair stored once
+
+
+@pytest.mark.skipif(not (RAW_DIR / "slashdot_zoo" / "slashdot_zoo.csv.zip").exists(),
+                    reason="raw Slashdot Zoo data not downloaded")
+def test_slashdot_raw_counts():
+    ds = load_slashdot()
+    assert ds.n == 79_120 and len(ds.u) == 515_397  # Netzschleuder num_vertices / num_edges
+    assert set(np.unique(ds.w).tolist()) == {-1.0, 1.0}

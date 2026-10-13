@@ -8,7 +8,8 @@ from pathlib import Path
 
 import numpy as np
 
-from apsp.loaders import Dataset, compact_ids, load_usairport, load_wikiconflict
+from apsp.loaders import (Dataset, compact_ids, load_slashdot, load_usairport,
+                          load_wikiconflict)
 
 PROCESSED_DIR = Path(__file__).resolve().parents[2] / "data" / "processed"
 
@@ -47,6 +48,16 @@ def inverse_weights(ds):
     return replace(ds, w=1.0 / ds.w, weight_meaning=f"1 / ({ds.weight_meaning})")
 
 
+def friends_only_hops(ds):
+    """Decision D4: keep only positive ("friend") edges, each of length 1, direction kept.
+
+    Foe edges are removed entirely, so no negative weights (and no negative cycles) remain.
+    """
+    keep = ds.w > 0
+    return replace(ds, u=ds.u[keep], v=ds.v[keep], w=np.ones(int(keep.sum())),
+                   weight_meaning="hops along friend tags (foe tags removed)")
+
+
 def save_processed(ds, slug, folder=PROCESSED_DIR):
     """Save a processed Dataset as a compressed .npz (exact float64 values, fast to reload)."""
     folder = Path(folder)
@@ -74,6 +85,7 @@ def load_processed(slug, folder=PROCESSED_DIR):
 PIPELINES = {
     "usairport": (load_usairport, [inverse_weights]),  # D1
     "wikiconflict": (load_wikiconflict, [drop_isolated, undirected_hops]),  # D2b, then D2 + D3
+    "slashdot": (load_slashdot, [friends_only_hops, drop_isolated]),  # D4, then D4b
 }
 
 

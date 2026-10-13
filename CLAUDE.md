@@ -65,7 +65,7 @@ Add to this list as soon as a new case is found.
   the report is genuine Dijkstra.
 - Our pure FW skips the inner j loop when dist[i][k] is inf (same result, fewer operations on sparse
   reachability). Still Theta(n^3) in the worst case.
-- Unit-weight graphs (Wiki Conflict under D2): BFS would be the optimal single-source algorithm there.
+- Unit-weight graphs (Wiki Conflict under D2, Slashdot under D4): BFS would be the optimal single-source algorithm there.
   We deliberately time genuine Dijkstra anyway, to keep the comparison with FW like-for-like.
 - Undirected graphs are stored as two one-way edges per pair; m in complexity formulas = one-way count.
 - If Johnson's algorithm is ever used (negative edges, no negative cycles), it is Bellman-Ford +
@@ -79,8 +79,9 @@ Decided items are logged in `docs/decisions.md` (with a plain-language explanati
 
 - [x] Wiki Conflict: hops (all weights 1), one undirected edge per editor pair, isolated ids dropped
       (n = 116,836). D2, D2b, D3 in docs/decisions.md.
-- [ ] Slashdot Zoo (signed, DIRECTED): check for negative cycles first; candidates are hops (same as
-      Wiki Conflict, for consistency), positive-only, or Johnson's algorithm if no negative cycles.
+- [x] Slashdot Zoo: friends only, hops, direction kept; users without friend tags dropped
+      (n = 69,995). 4,497 mutual-foe pairs = negative 2-cycles, so raw weights were unusable.
+      D4, D4b in docs/decisions.md.
 - [x] US Airports: distance = 1 / passengers; nodes = the 1,574 airports with routes (D1 in docs/decisions.md).
 - [ ] Strength-type weights (Advogato, Adolescent Health): raw, 1/w, -log w, or unweighted?
 - [ ] Directed vs undirected treatment per dataset (keep native direction unless decided otherwise).
@@ -122,8 +123,8 @@ requirements-lock.txt  exact installed versions (what we actually ran; from `pip
   extensions allocate outside Python's tracker.
 - `resource.getrusage(...).ru_maxrss` is in BYTES on macOS but KiB on Linux. Normalize by platform.
   psutil does not expose peak RSS on macOS; use it for total RAM (`psutil.virtual_memory().total`) instead.
-- Expected scale (verify in Phase 2): Slashdot Zoo ~79k nodes, Wiki Conflict ~118k nodes. A dense n×n
-  float64 matrix is then ~50–110 GB, so FW is infeasible there and Dijkstra must stream
+- Verified scale (processed): Slashdot n = 69,995 (n×n float64 = 36.5 GiB), Wiki Conflict n = 116,836
+  (101.7 GiB). Benchmark machine has 24 GiB, so FW is infeasible on both and Dijkstra must stream
   (e.g. batches of sources via the `indices=` argument of `csgraph.dijkstra`).
 
 ## Commands

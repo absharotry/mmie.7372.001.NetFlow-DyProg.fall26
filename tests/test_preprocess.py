@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 from apsp.loaders import Dataset
-from apsp.preprocess import (drop_isolated, inverse_weights, load_processed, save_processed,
-                            undirected_hops)
+from apsp.preprocess import (drop_isolated, friends_only_hops, inverse_weights, load_processed,
+                            save_processed, undirected_hops)
 from apsp.scipy_tier import apsp_dijkstra_scipy, edges_to_csr
 
 
@@ -72,3 +72,17 @@ def test_hops_graph_runs_through_dijkstra_without_negative_weights():
     out = undirected_hops(drop_isolated(tiny_signed_undirected()))
     dist = apsp_dijkstra_scipy(edges_to_csr(out.n, list(zip(out.u, out.v, out.w))))
     assert dist[0].tolist() == [0, 1, 2, 3]  # 0 -1- 1 -1- 2 -1- 3
+
+
+# --- Slashdot decisions (D4, D4b) ------------------------------------------------------------------
+
+def test_friends_only_removes_foes_and_mutual_foe_cycle():
+    # 0 <-> 1 mutual foes (a negative 2-cycle), 1 -> 2 friend, 2 -> 3 friend, 3 -> 4 foe.
+    ds = Dataset("sd-mini", 5, u=np.array([0, 1, 1, 2, 3]), v=np.array([1, 0, 2, 3, 4]),
+                 w=np.array([-1.0, -1.0, 1.0, 1.0, -1.0]), directed=True, weight_meaning="+-1")
+    out = drop_isolated(friends_only_hops(ds))
+    # Only 1 -> 2 -> 3 survives; nodes 0 and 4 had only foe tags and are dropped (D4b).
+    assert out.n == 3 and out.directed and (out.w == 1).all()
+    dist = apsp_dijkstra_scipy(edges_to_csr(out.n, list(zip(out.u, out.v, out.w))))
+    assert dist[0].tolist() == [0, 1, 2]  # direction kept: forward chain reachable...
+    assert dist[2, 0] == np.inf  # ...but not backwards

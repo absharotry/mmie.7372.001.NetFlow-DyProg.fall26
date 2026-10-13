@@ -47,3 +47,28 @@ Notes (verified 2026-10-12):
   on KONECT or Netzschleuder. Original study: Brandes, Kenis, Lerner, van Raaij (2009), "Network
   Analysis of Collaboration Structure in Wikipedia", WWW 2009, pp. 731-740.
 - **Zero weights:** 0.1% of rows have w = 0 (k = 1, ln 1 = 0), so their sign is lost.
+
+## Slashdot Zoo (`data/raw/slashdot_zoo/`)
+
+The user pointed to graph-tool's `gt.collection.ns["slashdot_zoo"]`. That call downloads from
+Netzschleuder, so we downloaded the same network directly from Netzschleuder as CSV instead of
+installing graph-tool (which is not pip-installable). Same data, pure-pip environment.
+
+| File | Source | SHA-256 |
+|---|---|---|
+| `slashdot_zoo.csv.zip` | https://networks.skewed.de/net/slashdot_zoo/files/slashdot_zoo.csv.zip (downloaded 2026-10-12) | `13a1bb7385b481048d09be61f6fdec3ae65617e57ecff26011f02ed6c18afa28` |
+| `edges.csv` (in zip) | source, target, weight | `96e70022d94834ce3384e092a975797ec58ad8d496b62823f2b17af4eb08fb64` |
+| `nodes.csv` (in zip) | node index + drawing position only (no user names) | `563f6745fee47b024cbd0f5ee54991c988c3014956d33bd34337b62b4b9bd778` |
+| `gprops.csv` (in zip) | metadata, incl. the KONECT README and meta | `95d8842e6948509996c497d6713a6e11b770589b731efe0903822c7c2f5858ae` |
+
+Metadata: https://networks.skewed.de/api/net/slashdot_zoo. Original: KONECT slashdot-zoo;
+J. Kunegis, A. Lommatzsch, C. Bauckhage (2009), "The Slashdot Zoo: Mining a Social Network with
+Negative Edges", WWW 2009, pp. 741-750.
+
+Notes (verified 2026-10-12):
+- **Directed:** A -> B means "A marked B". Ids are already 0-based, 0..79,119.
+- **Size:** 515,397 rows, matching Netzschleuder's num_edges. No self-loops, no duplicate rows.
+- **Weights:** +1 = friend (392,179 rows), -1 = foe (123,218 rows).
+- **Nodes:** 79,120 ids; 79,116 appear in an edge (4 have no edges).
+- **Negative cycles:** 4,497 pairs of users mark each other as foes. Each is a negative 2-cycle
+  (-1 + -1 = -2), so with raw weights as distances, shortest paths are undefined.

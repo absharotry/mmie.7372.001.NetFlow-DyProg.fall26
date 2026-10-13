@@ -126,3 +126,61 @@ routes are not nodes).
 
 Under D2, any number of interactions between the same two editors (up to 562 for one pair) becomes
 **one** edge of length 1. The 2,917,785 interaction rows become 2,027,871 edges.
+
+---
+
+## D4. Slashdot Zoo: friends only, distance = hops (decided 2026-10-12)
+
+### What we chose
+Keep only **friend** tags (+1). Remove all **foe** tags (-1). Each friend tag "A -> B" becomes a
+one-way edge of length 1, **direction kept** (A calling B a friend does not mean B calls A a friend).
+The shortest path from A to B is the fewest "friend of a friend of ..." steps from A to B.
+
+### Plain-language explanation
+On Slashdot, users tag other users as **friend** or **foe**. In the raw data a friend tag is +1 and a
+foe tag is -1. We cannot use those numbers as distances:
+
+- **A foe tag is not a "negative distance".** Disliking someone does not bring you closer than zero.
+- **Negative loops exist.** 4,497 pairs of users tag *each other* as foes. Going A -> B -> A then
+  costs -1 + -1 = -2, and every extra lap lowers it further, so "shortest" has no answer. (Johnson's
+  algorithm, which handles some negative edges, needs the graph to have no negative loops, so it
+  does not apply.)
+
+We keep the friend tags because they have a clear meaning: a path is a chain of people who vouch
+for the next person, like "a friend of a friend of a friend". A short path means two users are
+close in the network of goodwill. Foe tags express the opposite, so they do not belong in a chain
+of friendships, and we leave them out.
+
+### Alternatives considered
+| Option | Why not chosen |
+|---|---|
+| Raw +1 / -1 weights | 4,497 negative 2-cycles, so shortest paths are undefined |
+| Hops on all tags, ignoring sign (the Wiki Conflict rule, D2) | treats "foe" as a connection like "friend"; the friend-only network has a clearer meaning |
+| Foes only | keeps just 24% of tags; "chains of hostility" are hard to interpret |
+
+### Consequences (must be discussed in the report)
+- **Different rule from Wiki Conflict.** Wiki Conflict (D2) keeps every interaction and ignores the
+  sign; Slashdot keeps only friend tags. The report should state this and the reason: in Slashdot
+  the sign marks the relationship itself (friend vs foe), while in Wiki Conflict both kinds of
+  interaction show that two editors worked on the same text.
+- **Smaller graph:** 123,218 foe tags removed (24% of edges), leaving 392,179 friend tags.
+- **Low reachability:** only 36.3% of ordered user pairs are connected by a chain of friend tags,
+  mostly because 41% of the remaining users never tagged anyone as a friend.
+- **All weights are 1,** so the BFS note from D2 applies: BFS would be the optimal single-source
+  algorithm, and we time genuine Dijkstra for a like-for-like comparison.
+- **Floyd-Warshall is infeasible:** a 69,995 x 69,995 table is about 36.5 GiB, more than the 24 GiB
+  of RAM on the benchmark machine.
+
+## D4b. Slashdot Zoo: drop users with no friend tags (decided 2026-10-12)
+
+The D2b rule (keep only nodes with at least one edge), applied **after** removing foe tags.
+4 users have no tags at all, and 9,121 users had only foe tags, so they have no edges left in the
+friend network. All 9,125 are dropped: **n = 79,120 -> 69,995**.
+
+*Plain language:* someone who only ever tagged (or was tagged by) foes has no friendship links, so
+they cannot appear in any friend chain. Keeping them would only add empty rows to the distance table.
+
+### Observation for the report (not a decision)
+The out-degree distribution drops sharply near 200 tags, and a handful of users sit at about 400
+(max 426). This looks like a **site limit** on how many users one person could tag. We have not found
+a source that confirms it.

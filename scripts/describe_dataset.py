@@ -67,6 +67,12 @@ def describe_one(slug):
         table["negative share"] = [f"{share[i]:.0%}" for i in top]
     print("\nMost connected nodes:")
     print(table.to_string())
+    if ds.directed:
+        in_deg = np.bincount(adj.indices, minlength=ds.n)
+        top_in = np.argsort(-in_deg)[:10]
+        print("\nMost pointed-to nodes:")
+        print(pd.DataFrame({"node": names[top_in], "in-degree": in_deg[top_in]},
+                           index=range(1, 11)).to_string())
 
     # --- Figure ---------------------------------------------------------------------------------
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
@@ -85,7 +91,7 @@ def describe_one(slug):
     else:
         axes[1].hist(raw.w, bins=80, color="#4c72b0")
         axes[1].axvline(0, color="black", linewidth=0.8)
-        axes[1].set(xlabel="raw weight (sign: + agreement, - disagreement)")
+        axes[1].set(xlabel=f"raw weight ({raw.weight_meaning})")
     axes[1].set(ylabel="number of edge rows", title="Raw weight distribution")
     fig.suptitle(ds.name)
     fig.tight_layout()

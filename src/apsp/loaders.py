@@ -4,6 +4,7 @@ Turning raw weights into distances is a modeling decision (see CLAUDE.md, open d
 happens later, in preprocessing, never inside a loader.
 """
 
+import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -93,4 +94,27 @@ def load_wikiconflict(raw_dir=RAW_DIR):
         directed=False,
         weight_meaning="sign * ln(k): + agreement, - disagreement (k undocumented)",
         source="http://konect.cc/networks/wikiconflict",
+    )
+
+
+def load_slashdot(raw_dir=RAW_DIR):
+    """Slashdot Zoo friend/foe network (Netzschleuder slashdot_zoo = KONECT slashdot-zoo), RAW.
+
+    Directed: u -> v means "u tagged v". Weight +1 = friend, -1 = foe. Ids are already 0-based.
+    Read straight from the downloaded zip (its SHA-256 is in data/SOURCES.md), so the loader does
+    not depend on an unzipped copy.
+    """
+    path = Path(raw_dir) / "slashdot_zoo" / "slashdot_zoo.csv.zip"
+    with zipfile.ZipFile(path) as zf, zf.open("edges.csv") as f:
+        df = pd.read_csv(f, comment="#", header=None, names=["u", "v", "w"],
+                         dtype={"u": np.int64, "v": np.int64, "w": float})
+    return Dataset(
+        name="Slashdot Zoo",
+        n=79_120,  # Netzschleuder num_vertices; 4 ids have no edges
+        u=df["u"].to_numpy(),
+        v=df["v"].to_numpy(),
+        w=df["w"].to_numpy(),
+        directed=True,
+        weight_meaning="+1 friend, -1 foe",
+        source="https://networks.skewed.de/net/slashdot_zoo/files/slashdot_zoo.csv.zip",
     )

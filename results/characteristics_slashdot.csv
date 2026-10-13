@@ -1,0 +1,40 @@
+,value
+name,Slashdot Zoo
+directed,yes
+n,"69,995"
+m (edge rows),"392,179"
+m (distinct pairs),"392,179"
+one-way edges (algorithms),"392,179"
+duplicate rows,0
+self-loops,0
+density m/(n(n-1)),8.005e-05
+reciprocity,0.2105
+weak components,374
+largest weak comp.,"69,184"
+strong components,"45,331"
+largest strong comp.,"23,212"
+nodes with out-degree 0,"28,708"
+nodes with in-degree 0,"12,883"
+reachable pair fraction,0.3629
+out-degree min,0
+out-degree median,1
+out-degree mean,5.603
+out-degree max,426
+in-degree min,0
+in-degree median,1
+in-degree mean,5.603
+in-degree max,"2,498"
+raw weight all equal,no
+raw weight negative share,0.2391
+raw weight zero share,0
+raw weight min,-1
+raw weight median,1
+raw weight mean,0.5219
+raw weight max,1
+distance all equal,yes
+distance negative share,0
+distance zero share,0
+distance min,1
+distance median,1
+distance mean,1
+distance max,1
