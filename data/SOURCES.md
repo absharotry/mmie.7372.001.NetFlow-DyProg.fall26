@@ -24,3 +24,26 @@ Notes:
   and self-loops.
 - **Node count:** the codes file lists 1,858 airports, but only 1,574 appear in the network. The
   other 284 had no passenger routes in 2010 and are not nodes.
+
+## Wiki Conflict (`data/raw/wikiconflict/`)
+
+| File | Source | SHA-256 |
+|---|---|---|
+| `out.wikiconflict` | KONECT, http://konect.cc/networks/wikiconflict (supplied by the user) | `1232385ecae796ca800a1a0ba1d96f3e7ff1582c48f8ada1379cda943a7c6d3e` |
+| `README.wikiconflict` | KONECT (same archive) | `3d79b0256e267fe5d70c03e7daef15895819d6867c2804c1efa054bfbfe74eae` |
+| `meta.wikiconflict` | KONECT (same archive) | `3af20b374c90665a48985cb92f4fee9e8ba5425d0c091d26fab8e7ae79897402` |
+
+Notes (verified 2026-10-12):
+- **Format:** `% sym multisigned`: undirected, multi-edges, signed. Columns: user, user, weight,
+  Unix timestamp (2001-08-27 .. 2009-03-24). Every row has u < v, so each pair is stored one way only.
+- **Edge count:** the `%` header says 2,985,759 edges, but the file has **2,917,785** rows, which
+  matches the KONECT website and Netzschleuder (https://networks.skewed.de/net/wikiconflict).
+  The header is stale.
+- **Distinct pairs:** we count 2,027,871 distinct pairs; KONECT reports 2,014,062 "unique edges".
+  The difference is not explained.
+- **Nodes:** ids run 1..118,100, but only 116,836 appear in any edge (1,264 have no edges).
+- **Weights:** sign = agreement (+) or disagreement/revert (-) (README, Netzschleuder). Every
+  magnitude is exactly ln(k) for a whole number k (k up to 257,935). What k counts is not documented
+  on KONECT or Netzschleuder. Original study: Brandes, Kenis, Lerner, van Raaij (2009), "Network
+  Analysis of Collaboration Structure in Wikipedia", WWW 2009, pp. 731-740.
+- **Zero weights:** 0.1% of rows have w = 0 (k = 1, ln 1 = 0), so their sign is lost.

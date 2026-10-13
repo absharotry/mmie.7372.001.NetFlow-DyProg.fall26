@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
 
@@ -19,6 +20,8 @@ class Dataset:
     u: np.ndarray  # edge sources, 0-based ints
     v: np.ndarray  # edge targets, 0-based ints
     w: np.ndarray  # raw edge weights, float
+    # directed=False means every edge works both ways. The edge list may store each pair once
+    # (raw files) or in both directions (processed files); see apsp.preprocess.
     directed: bool
     weight_meaning: str
     labels: list | None = None  # labels[i] = human-readable name of node i, if known
@@ -65,4 +68,29 @@ def load_usairport(raw_dir=RAW_DIR):
         weight_meaning="passengers on the route in 2010",  # a strength, not a distance
         labels=[codes[i] for i in original_ids.tolist()],
         source="http://opsahl.co.uk/tnet/datasets/USairport_2010.txt (+ _codes.txt)",
+    )
+
+
+def load_wikiconflict(raw_dir=RAW_DIR):
+    """Wikipedia conflict network (KONECT wikiconflict), RAW: every interaction row, signed weights.
+
+    Undirected; each pair is stored once with u < v. Ids are shifted to 0-based but NOT compacted, so
+    n = 118,100 including 1,264 ids with no edges (dropping them is decision D2b, in preprocessing).
+    Weight = sign * ln(k): + agreement, - disagreement/revert; what k counts is undocumented.
+    The timestamp column is not loaded (no decision uses it).
+    The file's "%" header claims 2,985,759 edges; the file and KONECT's website have 2,917,785.
+    """
+    path = Path(raw_dir) / "wikiconflict" / "out.wikiconflict"
+    # pandas' C parser reads the 120 MB file in about a second (np.loadtxt is far slower).
+    df = pd.read_csv(path, sep=r"\s+", comment="%", header=None, usecols=[0, 1, 2],
+                     names=["u", "v", "w"], dtype={"u": np.int64, "v": np.int64, "w": float})
+    return Dataset(
+        name="Wiki Conflict",
+        n=118_100,  # from the header line "% 2985759 118100 118100"
+        u=df["u"].to_numpy() - 1,
+        v=df["v"].to_numpy() - 1,
+        w=df["w"].to_numpy(),
+        directed=False,
+        weight_meaning="sign * ln(k): + agreement, - disagreement (k undocumented)",
+        source="http://konect.cc/networks/wikiconflict",
     )

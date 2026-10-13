@@ -65,6 +65,11 @@ Add to this list as soon as a new case is found.
   the report is genuine Dijkstra.
 - Our pure FW skips the inner j loop when dist[i][k] is inf (same result, fewer operations on sparse
   reachability). Still Theta(n^3) in the worst case.
+- Unit-weight graphs (Wiki Conflict under D2): BFS would be the optimal single-source algorithm there.
+  We deliberately time genuine Dijkstra anyway, to keep the comparison with FW like-for-like.
+- Undirected graphs are stored as two one-way edges per pair; m in complexity formulas = one-way count.
+- If Johnson's algorithm is ever used (negative edges, no negative cycles), it is Bellman-Ford +
+  reweighting + n x Dijkstra: a variant, not textbook Dijkstra.
 - Our numpy FW is the textbook algorithm vectorized: the k loop stays in Python, the i/j loops become
   one broadcast per k. Same Theta(n^3) work; peak memory ~2 n^2 (table + one temporary per sweep).
 
@@ -72,8 +77,10 @@ Add to this list as soon as a new case is found.
 
 Decided items are logged in `docs/decisions.md` (with a plain-language explanation for the report).
 
-- [ ] Signed graphs (Slashdot Zoo, Wiki Conflict): how to turn signs into distances? Options include
-      ignoring weights (hop count), |w|, keeping only positive edges, or another documented choice.
+- [x] Wiki Conflict: hops (all weights 1), one undirected edge per editor pair, isolated ids dropped
+      (n = 116,836). D2, D2b, D3 in docs/decisions.md.
+- [ ] Slashdot Zoo (signed, DIRECTED): check for negative cycles first; candidates are hops (same as
+      Wiki Conflict, for consistency), positive-only, or Johnson's algorithm if no negative cycles.
 - [x] US Airports: distance = 1 / passengers; nodes = the 1,574 airports with routes (D1 in docs/decisions.md).
 - [ ] Strength-type weights (Advogato, Adolescent Health): raw, 1/w, -log w, or unweighted?
 - [ ] Directed vs undirected treatment per dataset (keep native direction unless decided otherwise).

@@ -1,0 +1,32 @@
+,value
+name,Wiki Conflict
+directed,no
+n,"116,836"
+m (edge rows),"4,055,742"
+m (distinct pairs),"2,027,871"
+one-way edges (algorithms),"4,055,742"
+duplicate rows,0
+self-loops,0
+density pairs/(n(n-1)/2),0.0002971
+components,"1,782"
+largest component,"113,123"
+isolated nodes,0
+reachable pair fraction,0.9375
+degree min,1
+degree median,4
+degree mean,34.71
+degree max,"20,153"
+raw weight all equal,no
+raw weight negative share,0.566
+raw weight zero share,0.0007828
+raw weight min,-12.46
+raw weight median,-0.6931
+raw weight mean,-0.2659
+raw weight max,9.619
+distance all equal,yes
+distance negative share,0
+distance zero share,0
+distance min,1
+distance median,1
+distance mean,1
+distance max,1

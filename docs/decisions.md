@@ -58,3 +58,71 @@ traffic actually flows along", not "the fewest flights".
 - **Floating point.** Costs range from about 6.7e-7 to 1. Different algorithms add them in a
   different order, so results can differ in the last few digits. Tests compare with a tolerance
   (`np.allclose`), never exact equality.
+
+---
+
+## D2. Wiki Conflict: distance = hops (decided 2026-10-12)
+
+### What we chose
+Every pair of editors who interacted at least once becomes **one undirected edge of length 1**. The
+sign (agreement / disagreement) and the size (ln k) are **not** used as distances. The shortest path
+between two editors is the smallest number of interaction steps that connects them.
+
+### Plain-language explanation
+In this network an edge means "these two editors worked on the same text", and its sign says whether
+they agreed (+) or one undid the other's work (-). It is tempting to use the signed numbers as
+distances, but that does not work, for two reasons.
+
+**1. A negative number is not a distance.** Two editors who clashed are not "closer than zero apart".
+A distance has to be zero or more.
+
+**2. Negative numbers make the question meaningless.** The network is *undirected*: if A interacted
+with B, then B interacted with A. So a single disagreement A-B with weight -0.69 already forms a
+loop: A -> B -> A costs -1.39, going round twice costs -2.77, and so on forever. There is no
+"shortest" path, just as there is no "smallest number". This is not a weakness of one algorithm; no
+algorithm can answer a question that has no answer.
+- Dijkstra would silently give wrong answers (its rule "once settled, a node's distance is final"
+  assumes extra road can never make a trip shorter), so our code refuses negative weights.
+- Floyd-Warshall would detect the loop and stop.
+- Asking instead for the shortest path that never revisits an editor ("simple path") is NP-hard with
+  negative weights, so it is not a practical alternative.
+
+So we measure distance the simplest honest way: **how many hand-offs separate two editors**, like
+"degrees of separation". About 96% of editors belong to one connected group, and they are on average
+about 3.3 steps apart.
+
+### Alternatives considered
+| Option | Why not chosen |
+|---|---|
+| Raw signed weights | negative loops everywhere, so shortest paths are undefined |
+| Agreements only (+) | discards 61% of editor pairs; the network falls apart into pieces |
+| Disagreements only (-) | discards 37% of editor pairs |
+| 1 / size, ignoring the sign | treats fights and agreements as the same thing; what "size" counts is undocumented |
+| Johnson's algorithm (handles negative edges) | only works when there are NO negative loops, which is not the case here |
+
+### Consequences (must be discussed in the report)
+- All weights are 1. On such a graph **breadth-first search (BFS)** is the optimal single-source
+  algorithm (O(n + m), with no priority queue). We still time **genuine Dijkstra**, so the comparison
+  with Floyd-Warshall stays like-for-like. The report must say that BFS would be faster here.
+- The sign and size information is not part of the distance. It is still reported in the dataset
+  characteristics.
+- Undirected edges are stored in both directions for the algorithms: 2,027,871 pairs become
+  4,055,742 one-way edges, and m in the complexity formulas uses the one-way count.
+
+## D2b. Wiki Conflict: drop editors with no interactions (decided 2026-10-12)
+
+Editor ids run from 1 to 118,100, but 1,264 ids appear in no edge at all. We **drop them**, so
+**n = 116,836**.
+
+*Plain language:* these ids belong to editors who never interacted with anyone in this data. They
+cannot be reached and cannot reach anyone, so every distance to or from them is "infinite". Keeping
+them would add rows and columns of nothing, make Floyd-Warshall's table bigger, and lower the share of
+reachable pairs for no real reason. The same rule was applied to US Airports (D1: airports with no
+routes are not nodes).
+
+*For the report:* KONECT lists n = 118,100. Our n = 116,836 is the same network minus isolated nodes.
+
+## D3. Wiki Conflict: repeated interactions (decided 2026-10-12)
+
+Under D2, any number of interactions between the same two editors (up to 562 for one pair) becomes
+**one** edge of length 1. The 2,917,785 interaction rows become 2,027,871 edges.

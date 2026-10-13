@@ -2,23 +2,21 @@
 
     python scripts/preprocess_datasets.py
 
-Writes data/processed/<slug>.npz.
+Writes data/processed/<slug>.npz. The steps per dataset are in apsp.preprocess.PIPELINES.
 """
 
-from apsp.loaders import load_usairport
-from apsp.preprocess import inverse_weights, load_processed, save_processed
+from apsp.preprocess import PIPELINES, build, load_processed, save_processed
 
 
 def main():
-    raw = load_usairport()
-    ds = inverse_weights(raw)  # decision D1
-    path = save_processed(ds, "usairport")
-
-    back = load_processed("usairport")
-    print(f"{ds.name}: n={back.n:,}, m={len(back.u):,}, directed={back.directed}")
-    print(f"  distance = {back.weight_meaning}")
-    print(f"  distance range: {back.w.min():.3g} .. {back.w.max():.3g}")
-    print(f"  saved to {path.relative_to(path.parents[2])}")
+    for slug in PIPELINES:
+        _, processed = build(slug)
+        path = save_processed(processed, slug)
+        back = load_processed(slug)
+        print(f"{back.name}: n={back.n:,}, one-way edges={len(back.u):,}, directed={back.directed}")
+        print(f"  distance = {back.weight_meaning}")
+        print(f"  distance range: {back.w.min():.3g} .. {back.w.max():.3g}")
+        print(f"  saved to {path.relative_to(path.parents[2])}")
 
 
 if __name__ == "__main__":

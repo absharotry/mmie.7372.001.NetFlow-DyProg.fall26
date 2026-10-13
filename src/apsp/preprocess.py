@@ -8,9 +8,31 @@ from pathlib import Path
 
 import numpy as np
 
-from apsp.loaders import Dataset
+from apsp.loaders import Dataset, compact_ids, load_usairport, load_wikiconflict
 
 PROCESSED_DIR = Path(__file__).resolve().parents[2] / "data" / "processed"
+
+
+def drop_isolated(ds):
+    """Decision D2b: keep only nodes that appear in at least one edge, renumbered 0..n'-1 in order
+    of first appearance (apsp.loaders.compact_ids). Labels, if any, follow their nodes."""
+    u, v, kept = compact_ids(ds.u, ds.v)
+    labels = [ds.labels[i] for i in kept.tolist()] if ds.labels is not None else None
+    return replace(ds, n=len(kept), u=u, v=v, labels=labels)
+
+
+def undirected_hops(ds):
+    """Decisions D2 + D3: every distinct undirected pair becomes ONE edge of length 1 (sign, size and
+    repeat count are discarded), stored in BOTH directions so the algorithms can use it either way.
+
+    Self-loops are dropped: a node's distance to itself is 0 anyway.
+    """
+    a, b = np.minimum(ds.u, ds.v), np.maximum(ds.u, ds.v)  # {u, v} and {v, u} become the same pair
+    pairs = np.unique(np.column_stack([a, b])[a != b], axis=0)
+    u = np.concatenate([pairs[:, 0], pairs[:, 1]])
+    v = np.concatenate([pairs[:, 1], pairs[:, 0]])
+    return replace(ds, u=u, v=v, w=np.ones(len(u)), directed=False,
+                   weight_meaning="hops (1 per interacting pair; sign and size ignored)")
 
 
 def inverse_weights(ds):
@@ -46,3 +68,19 @@ def load_processed(slug, folder=PROCESSED_DIR):
             directed=bool(f["directed"]), weight_meaning=str(f["weight_meaning"]),
             labels=labels, source=str(f["source"]),
         )
+
+
+# slug -> (loader, preprocessing steps in order). Each step implements a logged decision.
+PIPELINES = {
+    "usairport": (load_usairport, [inverse_weights]),  # D1
+    "wikiconflict": (load_wikiconflict, [drop_isolated, undirected_hops]),  # D2b, then D2 + D3
+}
+
+
+def build(slug):
+    """Load the raw dataset and apply its preprocessing steps. Returns (raw, processed)."""
+    loader, steps = PIPELINES[slug]
+    raw = ds = loader()
+    for step in steps:
+        ds = step(ds)
+    return raw, ds

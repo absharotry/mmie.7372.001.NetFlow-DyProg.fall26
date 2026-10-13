@@ -1,32 +1,40 @@
 ,value
 name,US Airports
-directed,True
-n,1574
-m (edge rows),28236
-m (distinct pairs),28236
+directed,yes
+n,"1,574"
+m (edge rows),"28,236"
+m (distinct pairs),"28,236"
+one-way edges (algorithms),"28,236"
 duplicate rows,0
 self-loops,0
-density m/(n(n-1)),0.011404328604282398
-reciprocity,0.7806346508003966
-weighted,True
-signed (any w<0),False
-zero weights,0
+density m/(n(n-1)),0.0114
+reciprocity,0.7806
 weak components,2
-largest weak comp.,1572
+largest weak comp.,"1,572"
 strong components,171
-largest strong comp.,1402
+largest strong comp.,"1,402"
 nodes with out-degree 0,96
 nodes with in-degree 0,70
-reachable pair fraction,0.892463837421675
+reachable pair fraction,0.8925
 out-degree min,0
-out-degree median,4.0
-out-degree mean,17.939008894536215
+out-degree median,4
+out-degree mean,17.94
 out-degree max,302
 in-degree min,0
-in-degree median,4.0
-in-degree mean,17.939008894536215
+in-degree median,4
+in-degree mean,17.94
 in-degree max,294
-weight min,1.0
-weight median,154.0
-weight mean,28025.699213769654
-weight max,1489618.0
+raw weight all equal,no
+raw weight negative share,0
+raw weight zero share,0
+raw weight min,1
+raw weight median,154
+raw weight mean,2.803e+04
+raw weight max,1.49e+06
+distance all equal,no
+distance negative share,0
+distance zero share,0
+distance min,6.713e-07
+distance median,0.006494
+distance mean,0.0874
+distance max,1
