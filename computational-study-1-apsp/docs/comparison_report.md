@@ -137,7 +137,11 @@ graphs with zero weights, self-loops, multi-edges, negative edges and negative c
 - **Feasibility pre-check:** a run is not started if its estimated memory exceeds 60% of RAM. FW
   needs n^2 cells: 8 bytes each (scipy), 16 (numpy: table plus one temporary per sweep), up to 32
   (pure Python objects).
-- Machine: Apple M2, 24 GiB RAM, macOS 26.7.1; Python 3.11.8, numpy 2.4.6, scipy 1.17.1.
+- **Machine:** MacBook Air (15-inch, M2, 2023; model identifier Mac14,15). Apple M2 chip with 8 CPU
+  cores (4 performance, 4 efficiency) and 24 GB of unified memory; macOS 26.7.1 (build 25G241).
+  Software: Python 3.11.8, numpy 2.4.6, scipy 1.17.1, networkx 3.6.1. Every run used a single
+  core; the computer was kept awake (`caffeinate`) and not used for other heavy work during runs.
+  Each row of `results/benchmarks.csv` records the machine and library versions.
 
 ## 4. Results on the five datasets
 
@@ -392,14 +396,14 @@ Applies to US Airports (D1), Adolescent Health (D5) and Advogato (D6).
 | FW times for the infeasible runs are extrapolated from Advogato. | Prediction error. | Two models give a range (21.5 h vs 12.8 h; 4 vs 6 days). The n^3 model predicted the other measured FW runs to within 0.96x-1.41x. The conclusion (hours to days) does not depend on which model is used. |
 | A run is infeasible if its memory estimate exceeds 60% of RAM (8 bytes per table cell in scipy, 16 in numpy, up to 32 in pure Python). | The memory model could be wrong. | On Advogato, scipy FW's measured memory increase (346 MiB) was 1.7 times the table (203 MiB), but most of the excess comes from our own summary step, which copies the reachable distances (Section 4.4), not from the algorithm. Either way the large networks exceed the budget by far more than any model error: 2.5 times (Slashdot) and 7 times (Wiki Conflict). |
 | scipy's FW skips pairs (i, k) where i cannot reach k. | We inferred this from measurements, not from scipy's source code. | The evidence is strong: on random networks with n = 1,000 its time ranged from 0.005 s to about 0.46 s depending on density, which is impossible for a fixed n^3 loop. |
-| One machine, single thread. Long runs (over 10 s) were measured once. | Absolute times would differ on other hardware; single long runs carry some timing noise. | Ratios and complexity arguments do not depend on the machine. For short runs measured five times, the spread (slowest minus fastest, relative to the median) was 4% at the median and 12% at most, far smaller than the differences between algorithms (3x to 170x). |
+| One machine (MacBook Air, M2), single thread. Long runs (over 10 s) were measured once. | Absolute times would differ on other hardware; single long runs carry some timing noise. The MacBook Air has no fan, so hours-long runs (e.g. the 8-hour Wiki Conflict run) may have been slowed slightly by thermal throttling. macOS chooses whether a job runs on a performance or an efficiency core; this was not controlled. | Ratios and complexity arguments do not depend on the machine. For short runs measured five times, the spread (slowest minus fastest, relative to the median) was 4% at the median and 12% at most, far smaller than the differences between algorithms (3x to 170x). |
 
 ## 10. Limitations
 
 - Long runs (over 10 s) were measured once rather than as a median of five.
 - On the small networks, peak memory reflects our batch size more than the algorithm (Section 4.4).
-- Results are from one machine (Apple M2, single thread); absolute times will differ elsewhere, but
-  the ratios and the complexity arguments do not depend on the machine.
+- Results are from one machine (MacBook Air, Apple M2, single thread, fanless); absolute times will
+  differ elsewhere, but the ratios and the complexity arguments do not depend on the machine.
 
 ## 11. References
 
@@ -458,7 +462,7 @@ Claude Code session transcript saved on the author's computer, up to October 13,
 | Code written | about 2,600 lines of Python (1,004 in `src/`, 638 in `tests/`, 950 in `scripts/`) |
 | Documentation written | about 900 lines (this report, `docs/decisions.md`, `data/SOURCES.md`) |
 | Git commits | 26 (25 made by the assistant) |
-| Computer time for the experiments | about 10 hours on one CPU core, of which 8.0 hours was the full pure-Python Dijkstra run on Wiki Conflict |
+| Computer time for the experiments | about 10 hours on one CPU core of the MacBook Air (M2) described in Section 3.2, of which 8.0 hours was the full pure-Python Dijkstra run on Wiki Conflict |
 
 A *token* is a small piece of text, roughly three-quarters of an English word. Monetary cost is not
 reported because it depends on the pricing plan.
