@@ -1,6 +1,8 @@
 # All-pairs shortest paths: n x Dijkstra vs Floyd-Warshall on five real networks
 
-MMIE 7372, Network Flows: Computational Study 1.
+**Abhimanyu Sharotry**  
+MMIE 7372 Network Flows and Dynamic Programming, Fall 2026: Computational Study 1  
+October 13, 2026
 
 **Code, data sources and all results:** <https://github.com/absharotry/mmie.7372.001.NetFlow-DyProg.fall26/tree/main/computational-study-1-apsp>
 

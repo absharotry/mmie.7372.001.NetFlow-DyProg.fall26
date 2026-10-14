@@ -2,6 +2,8 @@
 
 **n x Dijkstra vs Floyd-Warshall on five real-world networks** (MMIE 7372, Network Flows, Fall 2026).
 
+Author: Abhimanyu Sharotry
+
 - Assignment: [docs/assignment.md](docs/assignment.md)
 - Report: [docs/comparison_report.md](docs/comparison_report.md), Word version: [docs/comparison_report.docx](docs/comparison_report.docx)
 - Modeling decisions (how each dataset's weights became distances): [docs/decisions.md](docs/decisions.md)
