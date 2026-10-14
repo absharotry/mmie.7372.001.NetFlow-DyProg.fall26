@@ -4,7 +4,7 @@
 
 Author: Abhimanyu Sharotry
 
-**AI assistance:** this project was carried out with an AI coding assistant (Claude Opus 5.5 by Anthropic, via Claude Code), which wrote the code, ran the experiments and drafted the report under the author's direction. The author made the modeling and study-design decisions. Details: Section 12 of the [report](docs/comparison_report.md). All commits show the author's Git name; those made by the assistant carry a `Co-Authored-By: Claude` line (one exception, merge commit `c8140d6`; see the report).
+**AI assistance:** this project was carried out with an AI coding assistant (Claude Opus 5.5 by Anthropic, via Claude Code), which wrote the code, ran the experiments and drafted the report under the author's direction. The author made the modeling and study-design decisions. Model: Claude Opus 5.5, one Claude Code session (~40 author messages, 304 model responses, 350k output tokens, ~87.5M input tokens mostly from cache). Details: Section 12 of the [report](docs/comparison_report.md). All commits show the author's Git name; those made by the assistant carry a `Co-Authored-By: Claude` line (one exception, merge commit `c8140d6`; see the report).
 
 - Assignment: [docs/assignment.md](docs/assignment.md)
 - Report: [docs/comparison_report.md](docs/comparison_report.md), Word version: [docs/comparison_report.docx](docs/comparison_report.docx)
