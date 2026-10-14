@@ -57,7 +57,7 @@ Raw files are not committed. Download them into `data/raw/<folder>/` as listed i
 python scripts/preprocess_datasets.py   # raw data -> distance graphs (data/processed/)
 python scripts/describe_dataset.py      # network characteristics + distribution figures
 python scripts/run_benchmarks.py        # benchmark on the five datasets (about 1.5 h)
-python scripts/run_pure_large.py --stages slashdot,sample   # our Dijkstra on the two large networks
+python scripts/run_pure_large.py --stages slashdot,sample,full --deadline 23:59   # our Dijkstra on the two large networks (~8.5 h)
 python scripts/run_density_sweep.py     # density experiment on random networks (about 10 min)
 python scripts/make_report.py           # report tables and figures
 python scripts/build_word_report.py     # docs/comparison_report.docx (needs pandoc)

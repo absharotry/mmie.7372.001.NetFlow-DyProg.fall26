@@ -1,1 +1,2 @@
 wikiconflict full run: time limit 9.08 h (until 21:15)
+wikiconflict pure dijkstra (all sources): ok, 28,795.4 s for 116,836 sources

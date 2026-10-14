@@ -19,8 +19,7 @@ of density.
   n = 116,836). It must keep the full n x n distance table in memory: 36.5 GiB and 101.7 GiB,
   against 24 GiB of RAM. Even with enough memory, its measured speed predicts roughly 13-22 hours and
   4-6 days. n x Dijkstra finished them in 3.2 and 30.5 minutes (scipy) using at most 1.2 GiB. Our
-  own pure-Python Dijkstra finished Slashdot in 24.8 minutes and is estimated at 7.7 hours for Wiki
-  Conflict.
+  own pure-Python Dijkstra finished Slashdot in 24.8 minutes and Wiki Conflict in 8.0 hours.
 - **The gap widens with network size.** FW's work grows as n^3 whatever the number of edges, while
   Dijkstra's grows with n x m, and all five networks are sparse (density 0.008% to 1.1%).
 - **Density decides the winner.** On random networks with a fixed number of nodes, compiled FW
@@ -128,8 +127,9 @@ graphs with zero weights, self-loops, multi-edges, negative edges and negative c
 - Dijkstra is run **streaming**: a batch of sources is solved, summarized and discarded, so the
   n x n table is never stored. Every run produces the same summary (number of reachable pairs, mean
   and maximum distance), which is how all versions are cross-checked at full scale.
-- **Sampling (one case):** our pure Dijkstra on Wiki Conflict was timed on 1,000 randomly chosen
-  sources (fixed seed) and scaled by n / 1,000. This is an estimate and is labelled as such.
+- **Sampling as a check:** before the 8-hour full run of our pure Dijkstra on Wiki Conflict, we
+  timed 1,000 randomly chosen sources (fixed seed) and scaled by n / 1,000: 7.65 h predicted. The
+  full run took 8.00 h, 4.5% more, so sampling is a reliable way to estimate such runs.
 - **Feasibility pre-check:** a run is not started if its estimated memory exceeds 60% of RAM. FW
   needs n^2 cells: 8 bytes each (scipy), 16 (numpy: table plus one temporary per sweep), up to 32
   (pure Python objects).
@@ -145,7 +145,7 @@ graphs with zero weights, self-loops, multi-edges, negative edges and negative c
 | Adolescent Health | 2,539 | 12,969 | 0.70 s | 3.54 s | 24 s | 2.95 s | 3.3 min |
 | Advogato | 5,155 | 47,135 | 1.85 s | 31 s | 3.7 min | 10.4 s | 29.3 min |
 | Slashdot Zoo | 69,995 | 392,179 | **3.2 min** | infeasible | infeasible | **24.8 min** | infeasible |
-| Wiki Conflict | 116,836 | 4,055,742 | **30.5 min** | infeasible | infeasible | **~7.7 h** (estimated from 1,000 sources) | infeasible |
+| Wiki Conflict | 116,836 | 4,055,742 | **30.5 min** | infeasible | infeasible | **8.0 h** | infeasible |
 
 ![Time vs network size](../results/fig_time_vs_n.png)
 
@@ -154,7 +154,7 @@ check as scipy FW (they need 2 and up to 4 times as much memory: 73 GiB and more
 they were not submitted to the benchmark runner.
 
 *Figure 1. Algorithm time against n (both axes logarithmic). Blue: n x Dijkstra; orange:
-Floyd-Warshall. Hollow markers: predicted or estimated, not measured.*
+Floyd-Warshall. Hollow markers: predicted, not measured.*
 
 ### 4.2 How many times slower Floyd-Warshall is
 
@@ -174,9 +174,8 @@ theory is shown for reference.*
 On each of the three small networks, all five versions found exactly the same number of reachable
 pairs (2,209,653; 5,473,916; 16,177,614), and their mean distances agree to within 2e-15 (floating
 point rounding). On Slashdot Zoo, our pure Dijkstra and scipy's both found exactly 1,777,768,126
-reachable pairs with the same mean distance (4.8811). On Wiki Conflict, scipy found 12,796,704,262
-reachable pairs (93.8%); our 1,000-source sample gives 93.1% and a mean distance of 3.330 (full run:
-3.322). All reachable fractions match those computed independently from the network structure.
+reachable pairs with the same mean distance (4.8811). On Wiki Conflict, our pure Dijkstra and scipy's both found
+exactly 12,796,704,262 reachable pairs (93.8%) with the same mean distance (3.3224). All reachable fractions match those computed independently from the network structure.
 
 ### 4.4 Memory
 
@@ -184,7 +183,7 @@ reachable pairs (93.8%); our 1,000-source sample gives 93.1% and a mean distance
 |---|---|---|---|
 | Advogato | 203 MiB | 440 MiB | 92 MiB |
 | Slashdot Zoo | **36.5 GiB** (not run) | 801 MiB | 193 MiB |
-| Wiki Conflict | **101.7 GiB** (not run) | 1,192 MiB | 1,183 MiB (sampled run) |
+| Wiki Conflict | **101.7 GiB** (not run) | 1,192 MiB | 1,173 MiB |
 
 Pure Dijkstra, which handles one source at a time, never rose above the memory needed to hold the
 network itself. On the small networks the scipy figures mostly reflect our 256 MiB batch size (the
@@ -265,7 +264,7 @@ n x Dijkstra was the faster method on every dataset and in every implementation 
 run. Floyd-Warshall's disadvantage grew from 3.4x (US Airports) to 16.7x (Advogato) in scipy, and
 from 35x to 169x in pure Python. On the two large networks Floyd-Warshall could not run at all,
 while n x Dijkstra finished in minutes with the compiled library, and in 24.8 minutes (Slashdot) and
-an estimated 7.7 hours (Wiki Conflict) with our own pure-Python code.
+8.0 hours (Wiki Conflict) with our own pure-Python code.
 
 The measured gaps are smaller than the step-count theory in scipy (3.4x measured vs 8.3x predicted
 on US Airports) and larger in pure Python (35x). The reason is the cost of a single step. An FW step
@@ -326,7 +325,7 @@ cd computational-study-1-apsp
 python scripts/preprocess_datasets.py   # raw data -> distance graphs (fill data/raw first; see data/SOURCES.md)
 python scripts/describe_dataset.py      # network characteristics and distribution figures
 python scripts/run_benchmarks.py        # benchmark on the five datasets (~1.5 h)
-python scripts/run_pure_large.py --stages slashdot,sample   # our Dijkstra on the two large networks
+python scripts/run_pure_large.py --stages slashdot,sample,full --deadline 23:59   # our Dijkstra on the two large networks (~8.5 h)
 python scripts/run_density_sweep.py     # density experiment (~10 min)
 python scripts/make_report.py           # tables and figures
 python scripts/build_word_report.py     # this report as .docx (needs pandoc)
@@ -385,7 +384,7 @@ Applies to US Airports (D1), Adolescent Health (D5) and Advogato (D6).
 | Assumption | Potential issue | How we checked it / why it is acceptable |
 |---|---|---|
 | Timing covers the shortest-path computation only. | Loading data and building the input (which take seconds to a minute on the large networks) are excluded. | Applied identically to every version. scipy's FW includes a sparse-to-dense conversion inside its call; it is O(n^2) and negligible next to n^3. |
-| Our pure Dijkstra on Wiki Conflict is estimated from 1,000 random sources (time x n / 1,000). | The sampled sources might not be typical. | The sample's reachable share (93.1%) and mean distance (3.330) are close to the full scipy run's (93.8%, 3.322), so the sample is representative to within a few percent. |
+| (Resolved.) Our pure Dijkstra on Wiki Conflict was first estimated from 1,000 random sources. | The sampled sources might not be typical. | The full run was completed (8.00 h); the sample had predicted 7.65 h, 4.5% low. The reported time is the measured one. |
 | FW times for the infeasible runs are extrapolated from Advogato. | Prediction error. | Two models give a range (21.5 h vs 12.8 h; 4 vs 6 days). The n^3 model predicted the other measured FW runs to within 0.96x-1.41x. The conclusion (hours to days) does not depend on which model is used. |
 | A run is infeasible if its memory estimate exceeds 60% of RAM (8 bytes per table cell in scipy, 16 in numpy, up to 32 in pure Python). | The memory model could be wrong. | On Advogato, scipy FW's measured memory increase (346 MiB) was 1.7 times the table (203 MiB), but most of the excess comes from our own summary step, which copies the reachable distances (Section 4.4), not from the algorithm. Either way the large networks exceed the budget by far more than any model error: 2.5 times (Slashdot) and 7 times (Wiki Conflict). |
 | scipy's FW skips pairs (i, k) where i cannot reach k. | We inferred this from measurements, not from scipy's source code. | The evidence is strong: on random networks with n = 1,000 its time ranged from 0.005 s to about 0.46 s depending on density, which is impossible for a fixed n^3 loop. |
@@ -393,8 +392,6 @@ Applies to US Airports (D1), Adolescent Health (D5) and Advogato (D6).
 
 ## 10. Limitations
 
-- Our pure-Python Dijkstra on Wiki Conflict is an **estimate** from 1,000 random sources, scaled to
-  all 116,836. A full run takes about 7.7 hours.
 - Long runs (over 10 s) were measured once rather than as a median of five.
 - On the small networks, peak memory reflects our batch size more than the algorithm (Section 4.4).
 - Results are from one machine (Apple M2, single thread); absolute times will differ elsewhere, but

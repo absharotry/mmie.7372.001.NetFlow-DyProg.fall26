@@ -10,7 +10,7 @@ Apple M2, 24 GiB RAM, macOS-26.7.1-arm64-arm-64bit; Python 3.11.8, numpy 2.4.6, 
 | Adolescent Health | 2,539 | 12,969 | 695 ms | 3.54 s | 23.94 s (1 run) | 2.95 s | 3.3 min (1 run) |
 | Advogato | 5,155 | 47,135 | 1.85 s | 30.96 s (1 run) | 3.7 min (1 run) | 10.41 s (1 run) | 29.3 min (1 run) |
 | Slashdot Zoo | 69,995 | 392,179 | 3.2 min (1 run) | **infeasible** | not run | 24.8 min (1 run) | not run |
-| Wiki Conflict | 116,836 | 4,055,742 | 30.5 min (1 run) | **infeasible** | not run | ~7.7 h (est. from 1,000 sources) | not run |
+| Wiki Conflict | 116,836 | 4,055,742 | 30.5 min (1 run) | **infeasible** | not run | 8.0 h (1 run) | not run |
 
 ## Table 2. Floyd-Warshall time / Dijkstra time
 
@@ -29,21 +29,22 @@ Apple M2, 24 GiB RAM, macOS-26.7.1-arm64-arm-64bit; Python 3.11.8, numpy 2.4.6, 
 | US Airports | scipy FW | 131 | 89 | 42 | 19 |
 | US Airports | scipy Dijkstra | 131 | 88 | 43 | 19 |
 | US Airports | pure FW | 163 | 82 | 82 | 19 |
-| US Airports | pure Dijkstra | 87 | 86 | 0 | 19 |
 | US Airports | numpy FW | 152 | 80 | 72 | 19 |
-| Adolescent Health | scipy FW | 200 | 84 | 116 | 49 |
+| US Airports | pure Dijkstra | 87 | 86 | 0 | 19 |
 | Adolescent Health | numpy FW | 239 | 81 | 157 | 49 |
 | Adolescent Health | pure Dijkstra | 84 | 84 | 1 | 49 |
 | Adolescent Health | pure FW | 300 | 82 | 218 | 49 |
 | Adolescent Health | scipy Dijkstra | 188 | 85 | 104 | 49 |
+| Adolescent Health | scipy FW | 200 | 84 | 116 | 49 |
 | Advogato | numpy FW | 696 | 82 | 614 | 203 |
-| Advogato | scipy FW | 439 | 93 | 346 | 203 |
-| Advogato | scipy Dijkstra | 440 | 93 | 347 | 203 |
-| Advogato | pure FW | 764 | 82 | 682 | 203 |
 | Advogato | pure Dijkstra | 92 | 92 | 0 | 203 |
-| Slashdot Zoo | scipy Dijkstra | 801 | 193 | 609 | 37,379 |
+| Advogato | pure FW | 764 | 82 | 682 | 203 |
+| Advogato | scipy Dijkstra | 440 | 93 | 347 | 203 |
+| Advogato | scipy FW | 439 | 93 | 346 | 203 |
 | Slashdot Zoo | pure Dijkstra | 193 | 193 | 0 | 37,379 |
+| Slashdot Zoo | scipy Dijkstra | 801 | 193 | 609 | 37,379 |
 | Wiki Conflict | scipy Dijkstra | 1,192 | 1,192 | 0 | 104,146 |
+| Wiki Conflict | pure Dijkstra | 1,173 | 1,173 | 0 | 104,146 |
 
 ## Table 4. Runs not performed
 
@@ -75,6 +76,7 @@ Predicted FW time, two models calibrated on Advogato: (1) n^3 steps; (2) n x rea
 | pure Dijkstra | 3.47 | Adolescent Health | 1.29 s | 2.95 s | 2.28 |
 | pure Dijkstra | 3.47 | Advogato | 10.41 s | 10.41 s | 1.00 |
 | pure Dijkstra | 3.47 | Slashdot Zoo | 25.6 min | 24.8 min | 0.97 |
+| pure Dijkstra | 3.47 | Wiki Conflict | 7.7 h | 8.0 h | 1.04 |
 | pure FW | 12.8 | US Airports | 50.08 s | 74.20 s | 1.48 |
 | pure FW | 12.8 | Adolescent Health | 3.5 min | 3.3 min | 0.93 |
 | pure FW | 12.8 | Advogato | 29.3 min | 29.3 min | 1.00 |
@@ -87,4 +89,4 @@ Predicted FW time, two models calibrated on Advogato: (1) n^3 steps; (2) n x rea
 | Adolescent Health | 5 | 5,473,916 (yes) | 2.35853 (5.6e-16) | 8.6 |
 | Advogato | 5 | 16,177,614 (yes) | 4.70593 (7.5e-16) | 14.3333 |
 | Slashdot Zoo | 2 | 1,777,768,126 (yes) | 4.8811 (0.0e+00) | 16 |
-| Wiki Conflict | 1 | 12,796,704,262 (yes) | 3.32244 (0.0e+00) | 10 |
+| Wiki Conflict | 2 | 12,796,704,262 (yes) | 3.32244 (0.0e+00) | 10 |

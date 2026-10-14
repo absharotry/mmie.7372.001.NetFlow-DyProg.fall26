@@ -32,9 +32,8 @@ This is a learning project. Work in small steps.
 - [x] 2. Load/preprocess datasets; record characteristics (n, m, density, degree stats, components, weighted/signed, reachable-pair fraction).
       Record source URL + SHA-256 checksum of every downloaded archive.
 - [x] 3. Benchmark harness: wall time, peak memory, timeout, feasibility pre-check (estimate n² memory, n³ ops before running)
-- [~] 4. Run datasets smallest → largest; report infeasible runs with complexity-based explanation
-      (done: 3 small datasets in all tiers; 2 large in scipy + pure Dijkstra (Slashdot full,
-      Wiki sampled); optional: full pure Dijkstra on Wiki)
+- [x] 4. Run datasets smallest → largest; report infeasible runs with complexity-based explanation
+      (done: 3 small datasets in all tiers; 2 large in scipy + pure Dijkstra, all full runs)
 - [x] 5. Synthetic density sweep (fixed n, vary density) to locate the crossover
       (scipy crossover 21% at n=1,000, 27% at n=2,000; pure Python 98% at n=400)
 - [x] 6. Analysis + write-up (docs/comparison_report.md + .docx, submitted state 2026-10-13)
@@ -44,8 +43,7 @@ This is a learning project. Work in small steps.
 Draft report: docs/comparison_report.md (Section 8 lists pending items). Results: results/benchmarks.csv,
 results/report_tables.md, figures from scripts/make_report.py. Still to decide with the user:
 - [x] Pure Dijkstra: Slashdot full (24.8 min); Wiki Conflict sample of 1,000 sources (est. 7.7 h).
-- [ ] Optional: full pure Dijkstra on Wiki Conflict (`run_pure_large.py --stages full`); if it
-      finishes, regenerate tables, update report sections 1/4.1/7/9 and the .docx.
+- [x] Full pure Dijkstra on Wiki Conflict: 8.00 h (sample had predicted 7.65 h); report updated.
 - Submission: GitHub course repo + Word report + all code (decided 2026-10-13).
 - Known measurement caveat: on small datasets, peak memory mostly reflects the 256 MiB chunk size in
   bench_worker (whole table fits in one chunk), not the algorithm.

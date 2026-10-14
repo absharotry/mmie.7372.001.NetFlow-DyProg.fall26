@@ -207,10 +207,8 @@ def fig_time_vs_n(df, pred, samples):
         ls, mk = STYLE[tier]
         ax.plot(d.n, d.algo_median_s, linestyle=ls, marker=mk, color=COLOR[algo], linewidth=2,
                 markersize=8, markeredgecolor="white", markeredgewidth=1.5)
-        below = (tier, algo) == ("pure", "dijkstra")  # avoid colliding with the scipy Dijkstra label
         ax.annotate(LABEL[(tier, algo)], (d.n.iloc[-1], d.algo_median_s.iloc[-1]),
-                    xytext=(0, -14) if below else (8, 0), textcoords="offset points",
-                    ha="center" if below else "left", va="center", color=INK, fontsize=9)
+                    xytext=(8, 0), textcoords="offset points", va="center", color=INK, fontsize=9)
     # Predicted (not measured) FW times for datasets where it could not run: hollow markers.
     p = pred[(pred.algo == "floyd_warshall") & (pred.tier == "scipy") & (pred.status != "ok")]
     if len(p):
@@ -223,6 +221,9 @@ def fig_time_vs_n(df, pred, samples):
                         (r.n, r.predicted_s), xytext=(-10, 0), textcoords="offset points",
                         ha="right", va="center", color=MUTED, fontsize=8)
     for _, r in samples.iterrows():  # estimated from a sample of sources: hollow marker
+        if len(df[(df.dataset == r.dataset) & (df.tier == r.tier) & (df.algo == r.algo)
+                  & (df.status == "ok")]):
+            continue  # a full run exists: show the measurement, not the estimate
         ls, mk = STYLE[r.tier]
         ax.plot([r.n], [r.algo_full_estimate_s], linestyle="none", marker=mk, markersize=10,
                 markerfacecolor="none", markeredgecolor=COLOR[r.algo], markeredgewidth=2)
