@@ -4,6 +4,8 @@
 MMIE 7372 Network Flows and Dynamic Programming, Fall 2026: Computational Study 1  
 October 13, 2026
 
+**AI assistance:** this study was carried out with substantial help from an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code). The assistant wrote the code, ran the experiments and drafted this report under the author's direction; the author made the modeling and study-design decisions. Details in Section 12.
+
 **Code, data sources and all results:** <https://github.com/absharotry/mmie.7372.001.NetFlow-DyProg.fall26/tree/main/computational-study-1-apsp>
 
 ## 1. Summary
@@ -414,3 +416,38 @@ Applies to US Airports (D1), Adolescent Health (D5) and Advogato (D6).
 - J. Kunegis, A. Lommatzsch, C. Bauckhage (2009). The Slashdot Zoo: Mining a social network with negative edges. *Proc. WWW 2009*, 741-750.
 - U. Brandes, P. Kenis, J. Lerner, D. van Raaij (2009). Network analysis of collaboration structure in Wikipedia. *Proc. WWW 2009*, 731-740 (Wiki Conflict data).
 - P. Virtanen et al. (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python. *Nature Methods* 17, 261-272.
+
+## 12. Use of AI assistance
+
+This study was carried out with an AI coding assistant: **Claude Opus 5.5 (Anthropic), used through
+Claude Code** in the VS Code editor, on October 12-13, 2026. The assistant worked in the project
+folder, wrote and ran code, and committed to the Git repository using the author's Git settings, so
+every commit lists the author's name as Git author. The commits the assistant made are marked by a
+`Co-Authored-By: Claude` line, with one exception: merge commit `c8140d6`, which joined this project
+with the course repository's initial commit. The only commit not made by the assistant is that
+initial commit (`9d2fb91`, created on GitHub by the author). The project's
+`CLAUDE.md` file contains the working instructions the author gave the assistant.
+
+### Who did what
+
+| Task | Author (Abhimanyu Sharotry) | AI assistant |
+|---|---|---|
+| Scope and working agreement | Set the project scope, the phase plan and the working rules (work in small steps, explain before coding, never change a modeling decision silently) | Suggested additions to the plan (methodology, open questions), which the author accepted |
+| Data | Supplied the US Airports, Wiki Conflict and Adolescent Health files; pointed to the Slashdot Zoo and Advogato sources | Downloaded the remaining files, recorded checksums, checked original sources (e.g. found that US Airports weights are passengers, not flights) and documented discrepancies |
+| Modeling decisions (D1-D6) | **Made every decision**, choosing among the options presented (e.g. friends-only for Slashdot Zoo, which differed from the assistant's recommendation) | Explored each dataset, laid out the options with pros and cons, and gave a recommendation |
+| Study design | Chose which runs to perform (all implementations on the small networks, scipy on the large ones, full runs of our own Dijkstra), the order of the work, the density experiment, and the deliverables (GitHub repository, Word report, code) | Proposed the measurement method, the feasibility check, the density experiment and time estimates |
+| Code | Received step-by-step explanations of the code as it was written | Wrote all code: the algorithms, data loading and cleaning, the benchmark harness, the scripts and the 402 tests |
+| Experiments | Approved the run plans | Ran all benchmarks and experiments on the author's computer |
+| Analysis and report | Requested specific content (listing every non-textbook algorithm variant, the assumptions section, this disclosure) and asked for a verification pass | Produced the tables and figures, drafted the report and the decision log, and carried out the verification pass, correcting the errors it found |
+
+### How the AI output was checked
+
+- **Code:** every implementation is tested against an independent reference (networkx), and all
+  versions had to agree on every dataset (Section 4.3).
+- **Numbers in this report:** recomputed from the raw result files during a verification pass;
+  errors found in earlier drafts were corrected (listed in the Git history).
+- **Claims about the data:** checked against the original data sources where available; claims
+  that could not be confirmed are labelled as inferences (Section 9).
+
+The explanations of the algorithms, the decisions and the results were discussed with the author
+step by step during the work.
