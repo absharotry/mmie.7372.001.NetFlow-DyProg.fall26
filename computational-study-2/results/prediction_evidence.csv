@@ -1,0 +1,290 @@
+prediction,file,reading,quantity,value
+P1,elist96d,directed,time_ratio_SAP_over_FIFO,0.7266
+P1,elist96d,directed,time_verdict,SAP clear win
+P1,elist96d,directed,work_ratio_SAP_over_FIFO,0.795
+P1,elist96d,directed,work_verdict,SAP clear win
+P1,elist96d,directed,m_per_n,5.5
+P1,elist160d,directed,time_ratio_SAP_over_FIFO,1.109
+P1,elist160d,directed,time_verdict,PP-FIFO clear win
+P1,elist160d,directed,work_ratio_SAP_over_FIFO,1.123
+P1,elist160d,directed,work_verdict,PP-FIFO clear win
+P1,elist160d,directed,m_per_n,5.7
+P1,elist200d,directed,time_ratio_SAP_over_FIFO,0.8405
+P1,elist200d,directed,time_verdict,SAP clear win
+P1,elist200d,directed,work_ratio_SAP_over_FIFO,0.8967
+P1,elist200d,directed,work_verdict,no clear winner
+P1,elist200d,directed,m_per_n,6.7
+P1,elist500d,directed,time_ratio_SAP_over_FIFO,1.716
+P1,elist500d,directed,time_verdict,PP-FIFO clear win
+P1,elist500d,directed,work_ratio_SAP_over_FIFO,1.593
+P1,elist500d,directed,work_verdict,PP-FIFO clear win
+P1,elist500d,directed,m_per_n,7.95
+P1,elist640d,directed,time_ratio_SAP_over_FIFO,0.999
+P1,elist640d,directed,time_verdict,no clear winner
+P1,elist640d,directed,work_ratio_SAP_over_FIFO,1.064
+P1,elist640d,directed,work_verdict,PP-FIFO clear win
+P1,elist640d,directed,m_per_n,19.7
+P1,elist960d,directed,time_ratio_SAP_over_FIFO,0.8939
+P1,elist960d,directed,time_verdict,SAP clear win
+P1,elist960d,directed,work_ratio_SAP_over_FIFO,0.9888
+P1,elist960d,directed,work_verdict,no clear winner
+P1,elist960d,directed,m_per_n,9.88
+P1,all dense,directed,spearman_m_per_n_vs_time_ratio,0.3714
+P2,elist96d,directed,shortest_route,5
+P2,elist96d,directed,shortest_group_route_any_order,5
+P2,elist96d,directed,first_group_route_all_orders,5
+P2,elist96d,directed,mean_group_route,13.89
+P2,elist160d,directed,shortest_route,9
+P2,elist160d,directed,shortest_group_route_any_order,9
+P2,elist160d,directed,first_group_route_all_orders,9
+P2,elist160d,directed,mean_group_route,18.11
+P2,elist200d,directed,shortest_route,9
+P2,elist200d,directed,shortest_group_route_any_order,9
+P2,elist200d,directed,first_group_route_all_orders,9
+P2,elist200d,directed,mean_group_route,19.94
+P2,elist500d,directed,shortest_route,19
+P2,elist500d,directed,shortest_group_route_any_order,19
+P2,elist500d,directed,first_group_route_all_orders,19
+P2,elist500d,directed,mean_group_route,33.07
+P2,elist640d,directed,shortest_route,9
+P2,elist640d,directed,shortest_group_route_any_order,9
+P2,elist640d,directed,first_group_route_all_orders,9
+P2,elist640d,directed,mean_group_route,26.06
+P2,elist960d,directed,shortest_route,59
+P2,elist960d,directed,shortest_group_route_any_order,59
+P2,elist960d,directed,first_group_route_all_orders,59
+P2,elist960d,directed,mean_group_route,71.08
+P3,elist96d,directed,share_of_flood_walking_back,0.7876
+P3,elist96d,directed,PP-FIFO walkback_share_of_pushes,0.0241
+P3,elist96d,directed,PP-FIFO walkback_share_of_relabels,0.02641
+P3,elist96d,directed,PP-FIFO share_of_checks_after_max_preflow,0.8952
+P3,elist96d,directed,PP-FIFO+h walkback_share_of_pushes,0.1355
+P3,elist96d,directed,PP-FIFO+h walkback_share_of_relabels,0.2513
+P3,elist96d,directed,PP-FIFO+h share_of_checks_after_max_preflow,0.1067
+P3,elist160d,directed,share_of_flood_walking_back,0.7834
+P3,elist160d,directed,PP-FIFO walkback_share_of_pushes,0.01492
+P3,elist160d,directed,PP-FIFO walkback_share_of_relabels,0.01625
+P3,elist160d,directed,PP-FIFO share_of_checks_after_max_preflow,0.7061
+P3,elist160d,directed,PP-FIFO+h walkback_share_of_pushes,0.0495
+P3,elist160d,directed,PP-FIFO+h walkback_share_of_relabels,0.1068
+P3,elist160d,directed,PP-FIFO+h share_of_checks_after_max_preflow,0
+P3,elist200d,directed,share_of_flood_walking_back,0.7892
+P3,elist200d,directed,PP-FIFO walkback_share_of_pushes,0.01084
+P3,elist200d,directed,PP-FIFO walkback_share_of_relabels,0.011
+P3,elist200d,directed,PP-FIFO share_of_checks_after_max_preflow,0.862
+P3,elist200d,directed,PP-FIFO+h walkback_share_of_pushes,0.06227
+P3,elist200d,directed,PP-FIFO+h walkback_share_of_relabels,0.1342
+P3,elist200d,directed,PP-FIFO+h share_of_checks_after_max_preflow,0.007796
+P3,elist500d,directed,share_of_flood_walking_back,0.7683
+P3,elist500d,directed,PP-FIFO walkback_share_of_pushes,0.003086
+P3,elist500d,directed,PP-FIFO walkback_share_of_relabels,0.003996
+P3,elist500d,directed,PP-FIFO share_of_checks_after_max_preflow,0.369
+P3,elist500d,directed,PP-FIFO+h walkback_share_of_pushes,0.007249
+P3,elist500d,directed,PP-FIFO+h walkback_share_of_relabels,0.02243
+P3,elist500d,directed,PP-FIFO+h share_of_checks_after_max_preflow,0
+P3,elist640d,directed,share_of_flood_walking_back,0.6572
+P3,elist640d,directed,PP-FIFO walkback_share_of_pushes,0.003845
+P3,elist640d,directed,PP-FIFO walkback_share_of_relabels,0.004062
+P3,elist640d,directed,PP-FIFO share_of_checks_after_max_preflow,0.8764
+P3,elist640d,directed,PP-FIFO+h walkback_share_of_pushes,0.01951
+P3,elist640d,directed,PP-FIFO+h walkback_share_of_relabels,0.05311
+P3,elist640d,directed,PP-FIFO+h share_of_checks_after_max_preflow,0
+P3,elist960d,directed,share_of_flood_walking_back,0.7935
+P3,elist960d,directed,PP-FIFO walkback_share_of_pushes,0.01491
+P3,elist960d,directed,PP-FIFO walkback_share_of_relabels,0.01481
+P3,elist960d,directed,PP-FIFO share_of_checks_after_max_preflow,0.987
+P3,elist960d,directed,PP-FIFO+h walkback_share_of_pushes,0.2207
+P3,elist960d,directed,PP-FIFO+h walkback_share_of_relabels,0.5546
+P3,elist960d,directed,PP-FIFO+h share_of_checks_after_max_preflow,0.366
+P4,elist96,directed,"SAP no groups, no relabels, only the backward search",True
+P4,elist96,directed,"SAP+numb no groups, no relabels, only the backward search",True
+P5,elist96,directed,PP-FIFO rooms worked on,4
+P5,elist96,directed,PP-FIFO only start and its neighbours,True
+P5,elist96,directed,PP-FIFO+h rooms worked on,4
+P5,elist96,directed,PP-FIFO+h only start and its neighbours,True
+P5,elist96,directed,PP-HL rooms worked on,4
+P5,elist96,directed,PP-HL only start and its neighbours,True
+P5,elist96,directed,PP-HL+h rooms worked on,4
+P5,elist96,directed,PP-HL+h only start and its neighbours,True
+P5,elist96,directed,start and its neighbours,4
+P4,elist160,directed,"SAP no groups, no relabels, only the backward search",True
+P4,elist160,directed,"SAP+numb no groups, no relabels, only the backward search",True
+P5,elist160,directed,PP-FIFO rooms worked on,5
+P5,elist160,directed,PP-FIFO only start and its neighbours,True
+P5,elist160,directed,PP-FIFO+h rooms worked on,5
+P5,elist160,directed,PP-FIFO+h only start and its neighbours,True
+P5,elist160,directed,PP-HL rooms worked on,5
+P5,elist160,directed,PP-HL only start and its neighbours,True
+P5,elist160,directed,PP-HL+h rooms worked on,5
+P5,elist160,directed,PP-HL+h only start and its neighbours,True
+P5,elist160,directed,start and its neighbours,5
+P4,elist200,directed,"SAP no groups, no relabels, only the backward search",True
+P4,elist200,directed,"SAP+numb no groups, no relabels, only the backward search",True
+P5,elist200,directed,PP-FIFO rooms worked on,4
+P5,elist200,directed,PP-FIFO only start and its neighbours,True
+P5,elist200,directed,PP-FIFO+h rooms worked on,4
+P5,elist200,directed,PP-FIFO+h only start and its neighbours,True
+P5,elist200,directed,PP-HL rooms worked on,4
+P5,elist200,directed,PP-HL only start and its neighbours,True
+P5,elist200,directed,PP-HL+h rooms worked on,4
+P5,elist200,directed,PP-HL+h only start and its neighbours,True
+P5,elist200,directed,start and its neighbours,4
+P4,elist500,directed,"SAP no groups, no relabels, only the backward search",True
+P4,elist500,directed,"SAP+numb no groups, no relabels, only the backward search",True
+P5,elist500,directed,PP-FIFO rooms worked on,7
+P5,elist500,directed,PP-FIFO only start and its neighbours,True
+P5,elist500,directed,PP-FIFO+h rooms worked on,7
+P5,elist500,directed,PP-FIFO+h only start and its neighbours,True
+P5,elist500,directed,PP-HL rooms worked on,7
+P5,elist500,directed,PP-HL only start and its neighbours,True
+P5,elist500,directed,PP-HL+h rooms worked on,7
+P5,elist500,directed,PP-HL+h only start and its neighbours,True
+P5,elist500,directed,start and its neighbours,7
+P4,elist640,directed,"SAP no groups, no relabels, only the backward search",True
+P4,elist640,directed,"SAP+numb no groups, no relabels, only the backward search",True
+P5,elist640,directed,PP-FIFO rooms worked on,11
+P5,elist640,directed,PP-FIFO only start and its neighbours,True
+P5,elist640,directed,PP-FIFO+h rooms worked on,11
+P5,elist640,directed,PP-FIFO+h only start and its neighbours,True
+P5,elist640,directed,PP-HL rooms worked on,11
+P5,elist640,directed,PP-HL only start and its neighbours,True
+P5,elist640,directed,PP-HL+h rooms worked on,11
+P5,elist640,directed,PP-HL+h only start and its neighbours,True
+P5,elist640,directed,start and its neighbours,11
+P4,elist960,directed,"SAP no groups, no relabels, only the backward search",True
+P4,elist960,directed,"SAP+numb no groups, no relabels, only the backward search",True
+P5,elist960,directed,PP-FIFO rooms worked on,8
+P5,elist960,directed,PP-FIFO only start and its neighbours,True
+P5,elist960,directed,PP-FIFO+h rooms worked on,8
+P5,elist960,directed,PP-FIFO+h only start and its neighbours,True
+P5,elist960,directed,PP-HL rooms worked on,8
+P5,elist960,directed,PP-HL only start and its neighbours,True
+P5,elist960,directed,PP-HL+h rooms worked on,8
+P5,elist960,directed,PP-HL+h only start and its neighbours,True
+P5,elist960,directed,start and its neighbours,8
+P4,elist1440,directed,"SAP no groups, no relabels, only the backward search",True
+P4,elist1440,directed,"SAP+numb no groups, no relabels, only the backward search",True
+P5,elist1440,directed,PP-FIFO rooms worked on,11
+P5,elist1440,directed,PP-FIFO only start and its neighbours,True
+P5,elist1440,directed,PP-FIFO+h rooms worked on,11
+P5,elist1440,directed,PP-FIFO+h only start and its neighbours,True
+P5,elist1440,directed,PP-HL rooms worked on,11
+P5,elist1440,directed,PP-HL only start and its neighbours,True
+P5,elist1440,directed,PP-HL+h rooms worked on,11
+P5,elist1440,directed,PP-HL+h only start and its neighbours,True
+P5,elist1440,directed,start and its neighbours,11
+P4,elist1440d,directed,"SAP no groups, no relabels, only the backward search",True
+P4,elist1440d,directed,"SAP+numb no groups, no relabels, only the backward search",True
+P5,elist1440d,directed,PP-FIFO rooms worked on,11
+P5,elist1440d,directed,PP-FIFO only start and its neighbours,True
+P5,elist1440d,directed,PP-FIFO+h rooms worked on,11
+P5,elist1440d,directed,PP-FIFO+h only start and its neighbours,True
+P5,elist1440d,directed,PP-HL rooms worked on,11
+P5,elist1440d,directed,PP-HL only start and its neighbours,True
+P5,elist1440d,directed,PP-HL+h rooms worked on,11
+P5,elist1440d,directed,PP-HL+h only start and its neighbours,True
+P5,elist1440d,directed,start and its neighbours,11
+P6,elist96d,directed,PP-HL / PP-FIFO non-saturating pushes,1.027
+P6,elist96d,directed,PP-HL+h / PP-FIFO+h non-saturating pushes,0.6088
+P6,elist160d,directed,PP-HL / PP-FIFO non-saturating pushes,0.9596
+P6,elist160d,directed,PP-HL+h / PP-FIFO+h non-saturating pushes,0.6396
+P6,elist200d,directed,PP-HL / PP-FIFO non-saturating pushes,0.9957
+P6,elist200d,directed,PP-HL+h / PP-FIFO+h non-saturating pushes,0.795
+P6,elist500d,directed,PP-HL / PP-FIFO non-saturating pushes,0.7214
+P6,elist500d,directed,PP-HL+h / PP-FIFO+h non-saturating pushes,0.4609
+P6,elist640d,directed,PP-HL / PP-FIFO non-saturating pushes,0.942
+P6,elist640d,directed,PP-HL+h / PP-FIFO+h non-saturating pushes,0.3642
+P6,elist960d,directed,PP-HL / PP-FIFO non-saturating pushes,1.057
+P6,elist960d,directed,PP-HL+h / PP-FIFO+h non-saturating pushes,0.7627
+P6,elist96,two-way,PP-HL / PP-FIFO non-saturating pushes,1.041
+P6,elist96,two-way,PP-HL+h / PP-FIFO+h non-saturating pushes,0.7018
+P6,elist160,two-way,PP-HL / PP-FIFO non-saturating pushes,1.082
+P6,elist160,two-way,PP-HL+h / PP-FIFO+h non-saturating pushes,1.038
+P6,elist200,two-way,PP-HL / PP-FIFO non-saturating pushes,1.177
+P6,elist200,two-way,PP-HL+h / PP-FIFO+h non-saturating pushes,1.765
+P6,elist500,two-way,PP-HL / PP-FIFO non-saturating pushes,0.9963
+P6,elist500,two-way,PP-HL+h / PP-FIFO+h non-saturating pushes,0.9965
+P6,elist640,two-way,PP-HL / PP-FIFO non-saturating pushes,1.019
+P6,elist640,two-way,PP-HL+h / PP-FIFO+h non-saturating pushes,0.3378
+P6,elist960,two-way,PP-HL / PP-FIFO non-saturating pushes,0.996
+P6,elist960,two-way,PP-HL+h / PP-FIFO+h non-saturating pushes,1.291
+P6,elist1440,two-way,PP-HL / PP-FIFO non-saturating pushes,1.036
+P6,elist1440,two-way,PP-HL+h / PP-FIFO+h non-saturating pushes,0.4223
+P7,elist96d,directed,time speed-up SAP (SAP / SAP+numb),4.751
+P7,elist96d,directed,time speed-up PP (PP-FIFO / PP-FIFO+h),11.2
+P7,elist96d,directed,time orders where PP gains more,30
+P7,elist96d,directed,work speed-up SAP (SAP / SAP+numb),5.456
+P7,elist96d,directed,work speed-up PP (PP-FIFO / PP-FIFO+h),11.85
+P7,elist96d,directed,work orders where PP gains more,30
+P7,elist160d,directed,time speed-up SAP (SAP / SAP+numb),1.953
+P7,elist160d,directed,time speed-up PP (PP-FIFO / PP-FIFO+h),4.547
+P7,elist160d,directed,time orders where PP gains more,30
+P7,elist160d,directed,work speed-up SAP (SAP / SAP+numb),2.225
+P7,elist160d,directed,work speed-up PP (PP-FIFO / PP-FIFO+h),4.66
+P7,elist160d,directed,work orders where PP gains more,30
+P7,elist200d,directed,time speed-up SAP (SAP / SAP+numb),3.734
+P7,elist200d,directed,time speed-up PP (PP-FIFO / PP-FIFO+h),9.513
+P7,elist200d,directed,time orders where PP gains more,30
+P7,elist200d,directed,work speed-up SAP (SAP / SAP+numb),4.216
+P7,elist200d,directed,work speed-up PP (PP-FIFO / PP-FIFO+h),9.815
+P7,elist200d,directed,work orders where PP gains more,30
+P7,elist500d,directed,time speed-up SAP (SAP / SAP+numb),1.159
+P7,elist500d,directed,time speed-up PP (PP-FIFO / PP-FIFO+h),2.832
+P7,elist500d,directed,time orders where PP gains more,30
+P7,elist500d,directed,work speed-up SAP (SAP / SAP+numb),1.232
+P7,elist500d,directed,work speed-up PP (PP-FIFO / PP-FIFO+h),2.783
+P7,elist500d,directed,work orders where PP gains more,30
+P7,elist640d,directed,time speed-up SAP (SAP / SAP+numb),4.738
+P7,elist640d,directed,time speed-up PP (PP-FIFO / PP-FIFO+h),13.7
+P7,elist640d,directed,time orders where PP gains more,30
+P7,elist640d,directed,work speed-up SAP (SAP / SAP+numb),5.802
+P7,elist640d,directed,work speed-up PP (PP-FIFO / PP-FIFO+h),13.78
+P7,elist640d,directed,work orders where PP gains more,30
+P7,elist960d,directed,time speed-up SAP (SAP / SAP+numb),10.67
+P7,elist960d,directed,time speed-up PP (PP-FIFO / PP-FIFO+h),56.69
+P7,elist960d,directed,time orders where PP gains more,30
+P7,elist960d,directed,work speed-up SAP (SAP / SAP+numb),16.14
+P7,elist960d,directed,work speed-up PP (PP-FIFO / PP-FIFO+h),61.49
+P7,elist960d,directed,work orders where PP gains more,30
+P7,elist96,two-way,time speed-up SAP (SAP / SAP+numb),4.154
+P7,elist96,two-way,time speed-up PP (PP-FIFO / PP-FIFO+h),6.835
+P7,elist96,two-way,time orders where PP gains more,30
+P7,elist96,two-way,work speed-up SAP (SAP / SAP+numb),4.507
+P7,elist96,two-way,work speed-up PP (PP-FIFO / PP-FIFO+h),6.896
+P7,elist96,two-way,work orders where PP gains more,30
+P7,elist160,two-way,time speed-up SAP (SAP / SAP+numb),11.99
+P7,elist160,two-way,time speed-up PP (PP-FIFO / PP-FIFO+h),12.69
+P7,elist160,two-way,time orders where PP gains more,23
+P7,elist160,two-way,work speed-up SAP (SAP / SAP+numb),12.92
+P7,elist160,two-way,work speed-up PP (PP-FIFO / PP-FIFO+h),13.4
+P7,elist160,two-way,work orders where PP gains more,23
+P7,elist200,two-way,time speed-up SAP (SAP / SAP+numb),27.32
+P7,elist200,two-way,time speed-up PP (PP-FIFO / PP-FIFO+h),19.07
+P7,elist200,two-way,time orders where PP gains more,0
+P7,elist200,two-way,work speed-up SAP (SAP / SAP+numb),32.01
+P7,elist200,two-way,work speed-up PP (PP-FIFO / PP-FIFO+h),20.4
+P7,elist200,two-way,work orders where PP gains more,0
+P7,elist500,two-way,time speed-up SAP (SAP / SAP+numb),34.91
+P7,elist500,two-way,time speed-up PP (PP-FIFO / PP-FIFO+h),42.71
+P7,elist500,two-way,time orders where PP gains more,29
+P7,elist500,two-way,work speed-up SAP (SAP / SAP+numb),38.35
+P7,elist500,two-way,work speed-up PP (PP-FIFO / PP-FIFO+h),45.77
+P7,elist500,two-way,work orders where PP gains more,29
+P7,elist640,two-way,time speed-up SAP (SAP / SAP+numb),13.87
+P7,elist640,two-way,time speed-up PP (PP-FIFO / PP-FIFO+h),26.08
+P7,elist640,two-way,time orders where PP gains more,30
+P7,elist640,two-way,work speed-up SAP (SAP / SAP+numb),18.99
+P7,elist640,two-way,work speed-up PP (PP-FIFO / PP-FIFO+h),26.65
+P7,elist640,two-way,work orders where PP gains more,30
+P7,elist960,two-way,time speed-up SAP (SAP / SAP+numb),20.2
+P7,elist960,two-way,time speed-up PP (PP-FIFO / PP-FIFO+h),41.76
+P7,elist960,two-way,time orders where PP gains more,30
+P7,elist960,two-way,work speed-up SAP (SAP / SAP+numb),22.44
+P7,elist960,two-way,work speed-up PP (PP-FIFO / PP-FIFO+h),44.07
+P7,elist960,two-way,work orders where PP gains more,30
+P7,elist1440,two-way,time speed-up SAP (SAP / SAP+numb),27.95
+P7,elist1440,two-way,time speed-up PP (PP-FIFO / PP-FIFO+h),30.71
+P7,elist1440,two-way,time orders where PP gains more,29
+P7,elist1440,two-way,work speed-up SAP (SAP / SAP+numb),35.68
+P7,elist1440,two-way,work speed-up PP (PP-FIFO / PP-FIFO+h),31.27
+P7,elist1440,two-way,work orders where PP gains more,1

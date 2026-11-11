@@ -9,6 +9,7 @@ project's CLAUDE.md first.** It holds the working agreement, decisions and statu
 | Folder | Project | Status |
 |---|---|---|
 | `computational-study-1-apsp/` | Computational Study 1: all-pairs shortest paths, n x Dijkstra vs Floyd-Warshall | in progress |
+| `computational-study-2/` | Computational Study 2: maximum flow, shortest augmenting path vs preflow-push | complete (report: Colab notebook) |
 
 ## Conventions for every project
 

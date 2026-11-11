@@ -1,0 +1,8 @@
+# Minimum versions. After installing, record the exact versions used:
+#   pip freeze > requirements-lock.txt
+networkx>=3.2      # correctness oracle in tests only, never a timed contender
+numpy>=1.26        # growth-rate fits
+scipy>=1.11        # paired statistics in the robustness phase
+pandas>=2.1
+matplotlib>=3.8
+pytest>=8.0
